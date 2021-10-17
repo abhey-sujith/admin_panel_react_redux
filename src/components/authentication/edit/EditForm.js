@@ -56,7 +56,7 @@ export default function EditForm({ email = '', username = '', role = Roles.MT_US
   }, [success]);
 
   const RegisterSchema = Yup.object().shape({
-    Name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
+    Name: Yup.string().min(2, 'Too Short!').max(30, 'Too Long!').required('First name required'),
     email: Yup.string().email('Email must be a valid email address').required('Email is required')
   });
 

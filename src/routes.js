@@ -6,6 +6,7 @@ import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Edit from './pages/Edit';
+import MTAdmin from './pages/MTAdmin';
 import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import Blog from './pages/Blog';
@@ -29,7 +30,8 @@ export default function Router({ isLoggedIn }) {
         },
         { path: 'blog', element: <Blog /> },
         { path: 'register', element: <Register /> },
-        { path: 'edit', element: <Edit /> }
+        { path: 'edit', element: <Edit /> },
+        { path: 'movetech/create', element: <MTAdmin /> }
       ]
     },
     {

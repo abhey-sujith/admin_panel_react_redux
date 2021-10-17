@@ -1,14 +1,11 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useParams, useLocation } from 'react-router-dom';
 // material
 import { styled } from '@mui/material/styles';
 import { Box, Card, Link, Container, Typography } from '@mui/material';
 // layouts
-import AuthLayout from '../layouts/AuthLayout';
 // components
 import Page from '../components/Page';
-import { MHidden } from '../components/@material-extend';
-import { RegisterForm } from '../components/authentication/register';
-import AuthSocial from '../components/authentication/AuthSocial';
+import { EditForm } from '../components/authentication/edit';
 
 // ----------------------------------------------------------------------
 
@@ -39,21 +36,24 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function Register() {
+export default function Edit() {
+  const location = useLocation();
+  console.log(location.state, '---------location.state');
+  const { email, username, role } = location.state;
   return (
     <RootStyle title="Register | Minimal-UI">
       <Container>
         <ContentStyle>
           <Box sx={{ mb: 5 }}>
             <Typography variant="h4" gutterBottom>
-              Create A User
+              Edit User Details
             </Typography>
             {/* <Typography sx={{ color: 'text.secondary' }}>
               Free forever. No credit card needed.
             </Typography> */}
           </Box>
 
-          <RegisterForm />
+          <EditForm email={email} username={username} role={role} />
         </ContentStyle>
       </Container>
     </RootStyle>

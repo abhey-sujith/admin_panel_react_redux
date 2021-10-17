@@ -155,6 +155,7 @@ NavSection.propTypes = {
 
 export default function NavSection({ navConfig, ...other }) {
   const { pathname } = useLocation();
+  // console.log(!!matchPath({ path: '/dashboard/user', end: false }, pathname));
   const match = (path) => (path ? !!matchPath({ path, end: false }, pathname) : false);
 
   return (

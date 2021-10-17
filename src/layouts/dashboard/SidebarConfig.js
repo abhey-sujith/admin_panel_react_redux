@@ -6,6 +6,7 @@ import fileTextFill from '@iconify/icons-eva/file-text-fill';
 import lockFill from '@iconify/icons-eva/lock-fill';
 import personAddFill from '@iconify/icons-eva/person-add-fill';
 import alertTriangleFill from '@iconify/icons-eva/alert-triangle-fill';
+import { Roles } from '../../config';
 
 // ----------------------------------------------------------------------
 
@@ -18,9 +19,16 @@ const sidebarConfig = [
     icon: getIcon(pieChart2Fill)
   },
   {
-    title: 'user',
-    path: '/dashboard/user',
-    icon: getIcon(peopleFill)
+    title: 'Register User',
+    path: '/dashboard/register',
+    icon: getIcon(personAddFill),
+    permission: [Roles.SUPER_ADMIN]
+  },
+  {
+    title: 'Users',
+    path: '/dashboard/users',
+    icon: getIcon(peopleFill),
+    permission: [Roles.SUPER_ADMIN]
   },
   {
     title: 'product',
@@ -31,21 +39,6 @@ const sidebarConfig = [
     title: 'blog',
     path: '/dashboard/blog',
     icon: getIcon(fileTextFill)
-  },
-  {
-    title: 'login',
-    path: '/login',
-    icon: getIcon(lockFill)
-  },
-  {
-    title: 'register',
-    path: '/register',
-    icon: getIcon(personAddFill)
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: getIcon(alertTriangleFill)
   }
 ];
 

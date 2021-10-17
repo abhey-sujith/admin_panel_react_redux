@@ -18,13 +18,13 @@ import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 // ----------------------------------------------------------------------
 import { Roles, RolesArray } from '../../../config';
-import { createUserAsync, setError } from '../../../features/auth/authSlice';
+import { editUserAsync, setError } from '../../../features/auth/authSlice';
 
 const Alert = forwardRef((props, ref) => (
   <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 ));
 
-export default function RegisterForm() {
+export default function EditForm({ email = '', username = '', role = Roles.MT_USER }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -62,15 +62,15 @@ export default function RegisterForm() {
 
   const formik = useFormik({
     initialValues: {
-      Name: '',
-      email: '',
-      role: Roles.MT_USER
+      Name: username,
+      email,
+      role
     },
     validationSchema: RegisterSchema,
     onSubmit: (data) => {
       console.log(data);
       dispatch(setError());
-      dispatch(createUserAsync({ username: data.Name, email: data.email, role: data.role, token }));
+      dispatch(editUserAsync({ username: data.Name, email: data.email, role: data.role, token }));
       // navigate('/dashboard', { replace: true });
     }
   });
@@ -112,6 +112,7 @@ export default function RegisterForm() {
             type="email"
             label="Email address"
             {...getFieldProps('email')}
+            disabled={email !== '' || false}
             error={Boolean((touched.email && errors.email) || (error?.errors?.email ?? false))}
             helperText={(touched.email && errors.email) || error?.errors?.email}
           />
@@ -141,7 +142,7 @@ export default function RegisterForm() {
             variant="contained"
             loading={status === 'loading' || false}
           >
-            Register
+            Edit
           </LoadingButton>
         </Stack>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
@@ -151,7 +152,7 @@ export default function RegisterForm() {
         </Snackbar>
         <Snackbar open={openSuccess} autoHideDuration={6000} onClose={handleSuccessClose}>
           <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-            User Created
+            User Edited
           </Alert>
         </Snackbar>
       </Form>

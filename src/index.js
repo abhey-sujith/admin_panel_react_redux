@@ -12,6 +12,10 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import reportWebVitals from './reportWebVitals';
 import { store, persistor } from './app/store';
+import AxiosService from './api/axios.service';
+
+AxiosService.init();
+
 // ----------------------------------------------------------------------
 
 ReactDOM.render(

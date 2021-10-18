@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { API_URL } from '../../config/apiconfig';
+import { config } from '../../config/apiconfig';
 
 export const getMTUserDataAsync = createAsyncThunk(
   'movetech/getMTUserDataAsync',
@@ -8,7 +8,7 @@ export const getMTUserDataAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'GET',
-        url: `${API_URL}/api/getallmtusers`,
+        url: `${config.API_URL}/api/getallmtusers`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
@@ -36,7 +36,7 @@ export const createContractAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'POST',
-        url: `${API_URL}/api/create-contract`,
+        url: `${config.API_URL}/api/create-contract`,
         data: {
           contractname,
           contractdetails,
@@ -70,7 +70,7 @@ export const editContractAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'POST',
-        url: `${API_URL}/api/edit-contract`,
+        url: `${config.API_URL}/api/edit-contract`,
         data: {
           contractname,
           contractdetails,
@@ -101,7 +101,7 @@ export const getContractsDataAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'GET',
-        url: `${API_URL}/api/getallmtcontract`,
+        url: `${config.API_URL}/api/getallmtcontract`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`

@@ -15,4 +15,4 @@ if (isProd) {
   config = devConfig;
 }
 
-module.exports = { ...config };
+export { config };

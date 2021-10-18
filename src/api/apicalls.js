@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { API_URL } from '../config/apiconfig';
+import { config } from '../config/apiconfig';
 
 export const getUsersData = async (token) => {
   try {
     const response = await axios({
       method: 'GET',
-      url: `${API_URL}/api/superuser-getallusers`,
+      url: `${config.API_URL}/api/superuser-getallusers`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
@@ -24,7 +24,7 @@ export const deleteUser = async (id, token) => {
     console.log(id);
     const response = await axios({
       method: 'DELETE',
-      url: `${API_URL}/api/superuser-deleteuser`,
+      url: `${config.API_URL}/api/superuser-deleteuser`,
       data: {
         userId: id
       },
@@ -46,7 +46,7 @@ export const deleteContract = async (id, token) => {
     console.log(id);
     const response = await axios({
       method: 'DELETE',
-      url: `${API_URL}/api/deletemtcontract`,
+      url: `${config.API_URL}/api/deletemtcontract`,
       data: {
         contractId: id
       },

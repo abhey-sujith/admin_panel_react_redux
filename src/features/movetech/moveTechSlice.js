@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getMTUserDataAsync, createContractAsync } from './dataThunk';
+import { getMTUserDataAsync, createContractAsync } from './moveTechThunk';
 
-export const dataInitialState = {
+export const movetechInitialState = {
   status: 'idle',
   error: {},
   success: false,
@@ -10,9 +10,9 @@ export const dataInitialState = {
   getuserdata: ''
 };
 
-export const dataSlice = createSlice({
-  name: 'data',
-  initialState: dataInitialState,
+export const movetechSlice = createSlice({
+  name: 'movetech',
+  initialState: movetechInitialState,
   reducers: {
     resetData: (state, action) => {
       console.log(action.payload, '-------------resetData');
@@ -53,8 +53,8 @@ export const dataSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { resetData } = dataSlice.actions;
+export const { resetData } = movetechSlice.actions;
 
 export { getMTUserDataAsync, createContractAsync };
 
-export default dataSlice.reducer;
+export default movetechSlice.reducer;

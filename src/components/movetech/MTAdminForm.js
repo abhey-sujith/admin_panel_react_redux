@@ -21,7 +21,11 @@ import MuiAlert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 // ----------------------------------------------------------------------
 import { Roles, RolesArray } from '../../config';
-import { resetData, getMTUserDataAsync, createContractAsync } from '../../features/data/dataSlice';
+import {
+  resetData,
+  getMTUserDataAsync,
+  createContractAsync
+} from '../../features/movetech/moveTechSlice';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -66,10 +70,10 @@ export default function MTAdminForm({ email = '', username = '', role = Roles.MT
 
   const theme = useTheme();
 
-  const status = useSelector((state) => state.data.status);
-  const error = useSelector((state) => state.data.error);
-  const success = useSelector((state) => state.data.success);
-  const getuserdata = useSelector((state) => state.data.getuserdata);
+  const status = useSelector((state) => state.movetech.status);
+  const error = useSelector((state) => state.movetech.error);
+  const success = useSelector((state) => state.movetech.success);
+  const getuserdata = useSelector((state) => state.movetech.getuserdata);
 
   const token = useSelector((state) => state.auth.token);
 

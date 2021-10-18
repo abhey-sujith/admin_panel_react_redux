@@ -2,7 +2,7 @@ import { combineReducers } from '@reduxjs/toolkit';
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { authSlice, authInitialState } from './auth/authSlice';
-import { dataSlice, dataInitialState } from './data/dataSlice';
+import { movetechSlice, movetechInitialState } from './movetech/moveTechSlice';
 
 const authPersistConfig = {
   key: 'auth',
@@ -13,10 +13,10 @@ const authPersistConfig = {
 
 export const combinedReducers = combineReducers({
   auth: persistReducer(authPersistConfig, authSlice.reducer),
-  data: dataSlice.reducer
+  movetech: movetechSlice.reducer
 });
 
 export const initialState = {
   auth: authInitialState,
-  data: dataInitialState
+  movetech: movetechInitialState
 };

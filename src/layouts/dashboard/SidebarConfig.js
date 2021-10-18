@@ -37,6 +37,12 @@ const sidebarConfig = [
     permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
   },
   {
+    title: 'Show Contracts',
+    path: '/dashboard/movetech/display-contracts',
+    icon: getIcon(peopleFill),
+    permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
+  },
+  {
     title: 'product',
     path: '/dashboard/products',
     icon: getIcon(shoppingBagFill)

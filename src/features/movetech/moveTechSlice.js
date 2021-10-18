@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getMTUserDataAsync, createContractAsync } from './moveTechThunk';
+import {
+  getMTUserDataAsync,
+  createContractAsync,
+  getContractsDataAsync,
+  editContractAsync
+} from './moveTechThunk';
 
 export const movetechInitialState = {
   status: 'idle',
@@ -7,7 +12,10 @@ export const movetechInitialState = {
   success: false,
   getuserstatus: 'idle',
   getusererror: '',
-  getuserdata: ''
+  getuserdata: [],
+  getcontractstatus: 'idle',
+  getcontracterror: '',
+  getcontractdata: []
 };
 
 export const movetechSlice = createSlice({
@@ -48,6 +56,32 @@ export const movetechSlice = createSlice({
         state.status = 'idle';
         state.success = true;
         console.log(action.payload, '---------------action.payload');
+      })
+      .addCase(editContractAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(editContractAsync.rejected, (state, action) => {
+        state.status = 'idle';
+        console.log(action.payload, '---------------action.payload');
+        state.error = action.payload;
+      })
+      .addCase(editContractAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.success = true;
+        console.log(action.payload, '---------------action.payload');
+      })
+      .addCase(getContractsDataAsync.pending, (state) => {
+        state.getcontractstatus = 'loading';
+      })
+      .addCase(getContractsDataAsync.rejected, (state, action) => {
+        state.getcontractstatus = 'idle';
+        console.log(action.payload, '---------------action.payload');
+        state.getcontracterror = action.payload;
+      })
+      .addCase(getContractsDataAsync.fulfilled, (state, action) => {
+        state.getcontractstatus = 'idle';
+        state.getcontractdata = action.payload;
+        console.log(action.payload, '---------------action.payload');
       });
   }
 });
@@ -55,6 +89,6 @@ export const movetechSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const { resetData } = movetechSlice.actions;
 
-export { getMTUserDataAsync, createContractAsync };
+export { getMTUserDataAsync, createContractAsync, getContractsDataAsync, editContractAsync };
 
 export default movetechSlice.reducer;

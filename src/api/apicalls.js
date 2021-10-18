@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { API_URL } from '../config/apiconfig';
 
 export const getUsersData = async (token) => {
   try {
     const response = await axios({
       method: 'GET',
-      url: 'http://127.0.0.1:4000/api/superuser-getallusers',
+      url: `${API_URL}/api/superuser-getallusers`,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
@@ -23,7 +24,7 @@ export const deleteUser = async (id, token) => {
     console.log(id);
     const response = await axios({
       method: 'DELETE',
-      url: 'http://127.0.0.1:4000/api/superuser-deleteuser',
+      url: `${API_URL}/api/superuser-deleteuser`,
       data: {
         userId: id
       },
@@ -33,7 +34,29 @@ export const deleteUser = async (id, token) => {
       }
     });
     console.log(response, '-------response');
-    return true;
+    return response?.data?.response?.deletedCount === 1;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+export const deleteContract = async (id, token) => {
+  try {
+    console.log(id);
+    const response = await axios({
+      method: 'DELETE',
+      url: `${API_URL}/api/deletemtcontract`,
+      data: {
+        contractId: id
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log(response, '-------response');
+    return response?.data?.response?.deletedCount === 1;
   } catch (e) {
     console.log(e);
     return false;

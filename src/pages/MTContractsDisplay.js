@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
@@ -21,6 +22,14 @@ import {
   TableContainer,
   TablePagination
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
 // components
 import Page from '../components/Page';
 import Label from '../components/Label';
@@ -29,15 +38,21 @@ import SearchNotFound from '../components/SearchNotFound';
 import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
 //
 import USERLIST from '../_mocks_/user';
-import { getUsersData, deleteUser } from '../api/apicalls';
+import { fDate } from '../utils/formatTime';
+import { getContractsDataAsync } from '../features/movetech/moveTechSlice';
+import { deleteContract } from '../api/apicalls';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'username', label: 'Name', alignRight: false },
-  { id: 'email', label: 'Email', alignRight: false },
-  { id: 'role', label: 'Role', alignRight: false },
+  { id: 'contractname', label: 'Contract Name', alignRight: false },
+  { id: 'details', label: 'Details', alignRight: false },
+  { id: 'people', label: 'People', alignRight: false },
+  { id: 'state', label: 'State', alignRight: false },
+  { id: 'createdby', label: 'Created By', alignRight: false },
+  { id: 'updated', label: 'Updated By', alignRight: false },
+  { id: 'createdat', label: 'Created At', alignRight: false },
+  { id: 'updatedat', label: 'Updated At', alignRight: false },
   // { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'isactive', label: 'Active', alignRight: false },
   { id: '' }
 ];
 
@@ -69,42 +84,73 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     return filter(
       array,
-      (_user) => _user.username.toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (_user) => _user.contractname.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function User() {
-  const token = useSelector((state) => state.auth.token);
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
+};
 
+// const names = [
+//   'Oliver Hansen',
+//   'Van Henry',
+//   'April Tucker',
+//   'Ralph Hubbard',
+//   'Omar Alexander',
+//   'Carlos Abbott',
+//   'Miriam Wagner',
+//   'Bradley Wilkerson',
+//   'Virginia Andrews',
+//   'Kelly Snyder'
+// ];
+
+// function getStyles(name, personNames, theme) {
+//   return {
+//     fontWeight:
+//       personNames.indexOf(name) === -1
+//         ? theme.typography.fontWeightRegular
+//         : theme.typography.fontWeightMedium
+//   };
+// }
+
+export default function MTContractsDisplay() {
+  const dispatch = useDispatch();
+  const theme = useTheme();
+
+  const token = useSelector((state) => state.auth.token);
+  const CONTRACTS = useSelector((state) => state.movetech.getcontractdata);
+
+  console.log(CONTRACTS, '-----------------------------');
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   // const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('username');
+  const [orderBy, setOrderBy] = useState('contractname');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [USERS, setUSERS] = useState([]);
+  // const [personNames, setPersonNames] = React.useState([]);
 
   useEffect(() => {
-    const getData = async () => {
-      const USERDATA = await getUsersData(token);
-      console.log(USERDATA, 'USERDATA------');
-      setUSERS(USERDATA);
-    };
-    getData();
+    dispatch(getContractsDataAsync({ token }));
   }, []);
 
-  const handleDeleteUser = async (id) => {
-    const isDeleted = await deleteUser(id, token);
+  const handleDeleteContract = async (id) => {
+    const isDeleted = await deleteContract(id, token);
 
     if (isDeleted) {
-      const USERDATA = await getUsersData(token);
-      console.log(USERDATA, 'USERDATA------');
-      setUSERS(USERDATA);
-      alert('User is Deleted');
+      dispatch(getContractsDataAsync({ token }));
+      alert('Contract is Deleted');
     } else {
-      alert('Error Could not delete');
+      alert('Error Could not Contract');
     }
   };
 
@@ -154,9 +200,9 @@ export default function User() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERS.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - CONTRACTS.length) : 0;
 
-  const filteredUsers = applySortFilter(USERS, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(CONTRACTS, getComparator(order, orderBy), filterName);
 
   const isUserNotFound = filteredUsers.length === 0;
 
@@ -191,7 +237,7 @@ export default function User() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERS.length}
+                  rowCount={CONTRACTS.length}
                   // numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   // onSelectAllClick={handleSelectAllClick}
@@ -200,7 +246,17 @@ export default function User() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const { _id, username, role, isactive, email } = row;
+                      const {
+                        _id,
+                        contractname,
+                        contractdetails,
+                        createdby,
+                        state,
+                        createdAt,
+                        updatedAt,
+                        updatedby,
+                        people
+                      } = row;
                       // const isItemSelected = selected.indexOf(username) !== -1;
 
                       return (
@@ -218,30 +274,81 @@ export default function User() {
                               onChange={(event) => handleClick(event, username)}
                             /> */}
                           </TableCell>
-                          <TableCell component="th" scope="row" padding="none">
+                          {/* <TableCell component="th" scope="row" padding="none">
                             <Stack direction="row" alignItems="center" spacing={2}>
                               <Avatar sx={{ bgcolor: 'orange' }}>N</Avatar>
                               <Typography variant="subtitle2" noWrap>
-                                {username}
+                                {contractname}
                               </Typography>
                             </Stack>
-                          </TableCell>
-                          <TableCell align="left">{email}</TableCell>
-                          <TableCell align="left">{role}</TableCell>
-                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
+                          </TableCell> */}
+                          <TableCell align="left">{contractname}</TableCell>
                           <TableCell align="left">
-                            <Label variant="ghost" color={(true && 'success') || 'error'}>
-                              {(true && 'active') || 'inactive'}
+                            {contractdetails.slice(0, 70)}
+                            {contractdetails.length > 40 ? '...' : ''}
+                          </TableCell>
+                          <TableCell align="left">
+                            <div>
+                              <FormControl sx={{ m: 1, width: 150 }} disabled>
+                                {/* <InputLabel id="demo-multiple-chip-label">Chip</InputLabel> */}
+                                <Select
+                                  labelId="demo-multiple-chip-label"
+                                  id="demo-multiple-chip"
+                                  multiple
+                                  value={people}
+                                  // onChange={handleChange}
+                                  input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                                  renderValue={(selected) => (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                      {selected.map(({ username, _id }) => (
+                                        <Chip key={_id} label={username} />
+                                      ))}
+                                    </Box>
+                                  )}
+                                  MenuProps={MenuProps}
+                                >
+                                  {/* {people.map(({username}) => (
+                                    <MenuItem
+                                      key={username}
+                                      value={username}
+                                      // style={getStyles(name, personNames, theme)}
+                                    >
+                                      {username}
+                                    </MenuItem>
+                                  ))} */}
+                                </Select>
+                              </FormControl>
+                            </div>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Label
+                              variant="ghost"
+                              color={
+                                (state === 'ONGOING' && 'info') ||
+                                (state === 'DONE' && 'success') ||
+                                'error'
+                              }
+                            >
+                              {state}
                             </Label>
                           </TableCell>
+                          <TableCell align="left">{createdby[0].username}</TableCell>
+                          <TableCell align="left">{updatedby[0].username}</TableCell>
+                          <TableCell align="left">{fDate(updatedAt)}</TableCell>
+
+                          <TableCell align="left">{fDate(createdAt)}</TableCell>
+
+                          {/* <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell> */}
 
                           <TableCell align="right">
                             <UserMoreMenu
                               id={_id}
-                              DeleteUser={handleDeleteUser}
-                              email={email}
-                              username={username}
-                              role={role}
+                              DeleteContract={handleDeleteContract}
+                              contractname={contractname}
+                              contractdetails={contractdetails}
+                              people={people}
+                              contractId={_id}
+                              state={state}
                             />
                           </TableCell>
                         </TableRow>
@@ -269,7 +376,7 @@ export default function User() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERS.length}
+            count={CONTRACTS.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

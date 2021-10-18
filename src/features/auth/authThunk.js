@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { API_URL } from '../../config/apiconfig';
 
 export const loginAsync = createAsyncThunk(
   'auth/loginAsync',
@@ -8,7 +9,7 @@ export const loginAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'POST',
-        url: 'http://127.0.0.1:4000/api/login',
+        url: `${API_URL}/api/login`,
         data: {
           email,
           password
@@ -37,7 +38,7 @@ export const resetPasswordAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'POST',
-        url: 'http://127.0.0.1:4000/api/reset-password',
+        url: `${API_URL}/api/reset-password`,
         data: {
           password
         },
@@ -65,7 +66,7 @@ export const createUserAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'POST',
-        url: 'http://127.0.0.1:4000/api/superuser-createuser',
+        url: `${API_URL}/api/superuser-createuser`,
         data: {
           email,
           username,
@@ -95,7 +96,7 @@ export const editUserAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'POST',
-        url: 'http://127.0.0.1:4000/api/superuser-edituser',
+        url: `${API_URL}/api/superuser-edituser`,
         data: {
           email,
           username,

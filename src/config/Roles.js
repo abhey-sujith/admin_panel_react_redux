@@ -14,3 +14,11 @@ export const Roles = {
 };
 
 export const RolesArray = Object.keys(Roles);
+
+export const contractstatus = {
+  ONGOING: 'ONGOING',
+  DONE: 'DONE',
+  SUSPENDED: 'SUSPENDED'
+};
+
+export const contractstatusArray = Object.keys(contractstatus);

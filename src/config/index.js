@@ -1,1 +1,1 @@
-export { Roles, RolesArray } from './Roles';
+export { Roles, RolesArray, contractstatus, contractstatusArray } from './Roles';

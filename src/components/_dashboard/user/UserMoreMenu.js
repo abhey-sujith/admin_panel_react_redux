@@ -11,7 +11,15 @@ import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Alert } from '@
 
 // ----------------------------------------------------------------------
 
-export default function UserMoreMenu({ id, DeleteUser, email, username, role }) {
+export default function UserMoreMenu({
+  id,
+  DeleteContract,
+  contractname,
+  contractdetails,
+  people,
+  contractId,
+  state
+}) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,7 +31,7 @@ export default function UserMoreMenu({ id, DeleteUser, email, username, role }) 
       buttons: [
         {
           label: 'Yes',
-          onClick: () => DeleteUser(id)
+          onClick: () => DeleteContract(id)
         },
         {
           label: 'No',
@@ -57,8 +65,8 @@ export default function UserMoreMenu({ id, DeleteUser, email, username, role }) 
 
         <MenuItem
           component={RouterLink}
-          to="/dashboard/edit"
-          state={{ email, username, role }}
+          to="/dashboard/movetech/editcontract"
+          state={{ contractname, contractdetails, people, contractId, state }}
           sx={{ color: 'text.secondary' }}
         >
           <ListItemIcon>

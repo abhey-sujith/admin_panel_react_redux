@@ -28,19 +28,22 @@ export const getMTUserDataAsync = createAsyncThunk(
 
 export const createContractAsync = createAsyncThunk(
   'movetech/createContractAsync',
-  async ({ contractname, contractdetails, assignedpeople, token }, { rejectWithValue }) => {
-    console.log('thunk', contractname, contractdetails, assignedpeople);
+  async (
+    { customerName, quotationDetails, requirements, amount, daysToComplete, token },
+    { rejectWithValue }
+  ) => {
+    console.log('thunk', customerName, quotationDetails, requirements, amount, daysToComplete);
 
-    const contractpeopleids = assignedpeople.map((obj) => obj._id);
-    console.log(contractpeopleids, '----------------contractpeopleids');
     try {
       const response = await axios({
         method: 'POST',
-        url: `${config.API_URL}/api/create-contract`,
+        url: `${config.API_URL}/api/create-quotation`,
         data: {
-          contractname,
-          contractdetails,
-          contractpeople: contractpeopleids
+          customerName,
+          quotationDetails,
+          requirements,
+          amount,
+          daysToComplete
         },
         headers: {
           'Content-Type': 'application/json',
@@ -59,24 +62,119 @@ export const createContractAsync = createAsyncThunk(
   }
 );
 
-export const editContractAsync = createAsyncThunk(
-  'movetech/editContractAsync',
+export const editQuotationAsync = createAsyncThunk(
+  'movetech/editQuotationAsync',
   async (
-    { contractname, contractdetails, assignedpeople, contractId, token, state },
+    {
+      customerName,
+      quotationDetails,
+      requirements,
+      amount,
+      daysToComplete,
+      advanceAmount,
+      deliveryDate,
+      settledAmount,
+      token,
+      id
+    },
     { rejectWithValue }
   ) => {
-    console.log('thunk', contractname, contractdetails, assignedpeople);
+    console.log(
+      'thunk',
+      customerName,
+      quotationDetails,
+      requirements,
+      amount,
+      daysToComplete,
+      advanceAmount,
+      deliveryDate,
+      settledAmount,
+      token,
+      id
+    );
 
     try {
       const response = await axios({
         method: 'POST',
-        url: `${config.API_URL}/api/edit-contract`,
+        url: `${config.API_URL}/api/edit-quotation`,
         data: {
-          contractname,
-          contractdetails,
-          contractpeople: assignedpeople,
-          contractId,
-          state
+          customerName,
+          quotationDetails,
+          requirements,
+          amount,
+          daysToComplete,
+          advanceAmount,
+          deliveryDate,
+          settledAmount,
+          quotationId: id
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response, '-------response');
+      return response.data;
+    } catch (err) {
+      console.log(err, '------------error', err.message);
+      if (err && err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const approveQuotationAsync = createAsyncThunk(
+  'movetech/approveQuotationAsync',
+  async (
+    { assignedpeople, advanceAmount, deliveryDate, startDate, token, id },
+    { rejectWithValue }
+  ) => {
+    const people = assignedpeople.map((obj) => obj._id);
+    console.log('thunk--', assignedpeople, advanceAmount, deliveryDate, startDate, token, id);
+
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: `${config.API_URL}/api/approve-quotation`,
+        data: {
+          advanceAmount,
+          deliveryDate,
+          startDate,
+          people,
+          quotationId: id
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response, '-------response');
+      return response.data;
+    } catch (err) {
+      console.log(err, '------------error', err.message);
+      if (err && err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const endQuotationAsync = createAsyncThunk(
+  'movetech/endQuotationAsync',
+  async ({ endDate, settledAmount, token, id }, { rejectWithValue }) => {
+    console.log('thunk--', endDate, settledAmount, token, id);
+
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: `${config.API_URL}/api/end-quotation`,
+        data: {
+          settledAmount,
+          endDate,
+          quotationId: id
         },
         headers: {
           'Content-Type': 'application/json',
@@ -101,14 +199,38 @@ export const getContractsDataAsync = createAsyncThunk(
     try {
       const response = await axios({
         method: 'GET',
-        url: `${config.API_URL}/api/getallmtcontract`,
+        url: `${config.API_URL}/api/getallmtquotations`,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         }
       });
       console.log(response, '-------response');
-      return response.data.contracts;
+      return response.data.quotations;
+    } catch (err) {
+      console.log(err, '------------error', err.message);
+      if (err && err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const getContractsAvailableAsync = createAsyncThunk(
+  'movetech/getContractsAvailableAsync',
+  async ({ token }, { rejectWithValue }) => {
+    try {
+      const response = await axios({
+        method: 'GET',
+        url: `${config.API_URL}/api/getmt-availablecontract`,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response, '-------response');
+      return response.data;
     } catch (err) {
       console.log(err, '------------error', err.message);
       if (err && err.response && err.response.data) {

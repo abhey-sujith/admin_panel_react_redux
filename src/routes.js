@@ -6,9 +6,14 @@ import LogoOnlyLayout from './layouts/LogoOnlyLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Edit from './pages/Edit';
-import MTAdmin from './pages/MTAdminCreate';
-import MTAdminEdit from './pages/MTAdminEdit';
-import MTContractsDisplay from './pages/MTContractsDisplay';
+import MTAdmin from './pages/MTAdmin/MTAdminCreate';
+import MTAdminEdit from './pages/MTAdmin/MTAdminEdit';
+import MTAdminApprove from './pages/MTAdmin/MTAdminApprove';
+import MTAdminEnd from './pages/MTAdmin/MTAdminEnd';
+import MTContractsAvailable from './pages/MTContractsAvailable';
+import MTContractsAccepted from './pages/MTContractsAccepted';
+import MTContractsDone from './pages/MTContractsDone';
+import MTContractsDisplay from './pages/MTAdmin/MTContractsDisplay';
 import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import Blog from './pages/Blog';
@@ -35,7 +40,12 @@ export default function Router({ isLoggedIn }) {
         { path: 'edit', element: <Edit /> },
         { path: 'movetech/create', element: <MTAdmin /> },
         { path: 'movetech/display-contracts', element: <MTContractsDisplay /> },
-        { path: 'movetech/editcontract', element: <MTAdminEdit /> }
+        { path: 'movetech/edit-quotation', element: <MTAdminEdit /> },
+        { path: 'movetech/approve-quotation', element: <MTAdminApprove /> },
+        { path: 'movetech/end-quotation', element: <MTAdminEnd /> },
+        { path: 'movetech/contracts-available', element: <MTContractsAvailable /> },
+        { path: 'movetech/contracts-accepted', element: <MTContractsAccepted /> },
+        { path: 'movetech/contracts-done', element: <MTContractsDone /> }
       ]
     },
     {

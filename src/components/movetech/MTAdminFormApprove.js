@@ -28,7 +28,7 @@ import { Roles, RolesArray, contractstatusArray } from '../../config';
 import {
   resetData,
   getMTUserDataAsync,
-  editQuotationAsync
+  approveQuotationAsync
 } from '../../features/movetech/moveTechSlice';
 
 const ITEM_HEIGHT = 48;
@@ -68,24 +68,7 @@ const Alert = forwardRef((props, ref) => (
   <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 ));
 
-function isIsoDate(str) {
-  if (!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/.test(str)) return false;
-  var d = new Date(str);
-  return d.toISOString() === str;
-}
-
-export default function MTAdminForm({
-  id,
-  customerName,
-  quotationDetails,
-  state,
-  requirements,
-  amount,
-  daysToComplete,
-  advanceAmount,
-  deliveryDate,
-  settledAmount
-}) {
+export default function MTAdminFormApprove({ id = '' }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -94,6 +77,7 @@ export default function MTAdminForm({
   const status = useSelector((state) => state.movetech.status);
   const error = useSelector((state) => state.movetech.error);
   const success = useSelector((state) => state.movetech.success);
+  const getuserdata = useSelector((state) => state.movetech.getuserdata);
 
   const token = useSelector((state) => state.auth.token);
 
@@ -101,11 +85,21 @@ export default function MTAdminForm({
   const [openSuccess, setopenSuccess] = useState(false);
 
   const [personName, setPersonName] = useState([]);
-  const [DeliveryDatevalue, setDeliveryDatevalue] = useState(deliveryDate);
+  const [MTUsersName, setMTUsersName] = useState([]);
+
+  const [DeliveryDatevalue, setDeliveryDatevalue] = useState(new Date());
+  const [CurrentDatevalue, setCurrentDatevalue] = useState(new Date());
 
   useEffect(() => {
     dispatch(resetData());
+    dispatch(getMTUserDataAsync({ token }));
   }, []);
+
+  useEffect(() => {
+    if (getuserdata) {
+      setMTUsersName(getuserdata);
+    }
+  }, [getuserdata]);
 
   useEffect(() => {
     if (error?.errors) {
@@ -123,46 +117,28 @@ export default function MTAdminForm({
       }, 2000);
     }
   }, [success]);
+  console.log(getuserdata, '----------getuserdata');
 
   const FormSchema = Yup.object().shape({
-    Cname: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('customerName required'),
-    QDetails: Yup.string().required('Quotation Details required'),
-    Req: Yup.string(),
-    amt: Yup.number().required('Amount required'),
-    DTC: Yup.number().required('Days To Complete required'),
-    advAmount: Yup.number().required('advance Amount required')
+    Q_advance_amount: Yup.number().required('Quotation Advance Amount is required'),
+    Q_assigned_people: Yup.array().min(1)
   });
 
   const formik = useFormik({
     initialValues: {
-      Cname: customerName,
-      QDetails: quotationDetails,
-      Req: requirements,
-      amt: amount,
-      DTC: daysToComplete,
-      advAmount: advanceAmount,
-      setAmount: settledAmount
+      Q_advance_amount: 0,
+      Q_assigned_people: []
     },
     validationSchema: FormSchema,
     onSubmit: (data) => {
-      console.log(
-        data,
-        '---------data',
-        isIsoDate(DeliveryDatevalue) ? DeliveryDatevalue : DeliveryDatevalue.toISOString()
-      );
+      console.log(data, '----r', CurrentDatevalue.toISOString(), DeliveryDatevalue.toISOString());
       dispatch(resetData());
       dispatch(
-        editQuotationAsync({
-          customerName: data.Cname,
-          quotationDetails: data.QDetails,
-          requirements: data.Req,
-          amount: data.amt,
-          daysToComplete: data.DTC,
-          advanceAmount: data.advAmount,
-          deliveryDate: isIsoDate(DeliveryDatevalue)
-            ? DeliveryDatevalue
-            : DeliveryDatevalue.toISOString(),
-          settledAmount: data.setAmount,
+        approveQuotationAsync({
+          assignedpeople: data.Q_assigned_people,
+          advanceAmount: data.Q_advance_amount,
+          deliveryDate: DeliveryDatevalue.toISOString(),
+          startDate: CurrentDatevalue.toISOString(),
           token,
           id
         })
@@ -211,64 +187,58 @@ export default function MTAdminForm({
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
               fullWidth
-              label="Customer Name"
-              {...getFieldProps('Cname')}
-              error={Boolean(
-                (touched.Cname && errors.Cname) || (error?.errors?.contractname ?? false)
-              )}
-              helperText={(touched.Cname && errors.Cname) || error?.errors?.contractname}
+              label="Advance Amount"
+              {...getFieldProps('Q_advance_amount')}
+              error={Boolean(touched.Q_advance_amount && errors.Q_advance_amount)}
+              helperText={touched.Q_advance_amount && errors.Q_advance_amount}
             />
           </Stack>
-          <TextField
-            fullWidth
-            multiline
-            label="Quotation Details"
-            {...getFieldProps('QDetails')}
-            error={Boolean(touched.QDetails && errors.QDetails)}
-            helperText={touched.QDetails && errors.QDetails}
-          />
-          <TextField
-            fullWidth
-            multiline
-            label="Requirement"
-            {...getFieldProps('Req')}
-            error={Boolean(touched.Req && errors.Req)}
-            helperText={touched.Req && errors.Req}
-          />
-          <TextField
-            fullWidth
-            multiline
-            label="Amount"
-            {...getFieldProps('amt')}
-            error={Boolean(touched.amt && errors.amt)}
-            helperText={touched.amt && errors.amt}
-          />
-          <TextField
-            fullWidth
-            multiline
-            label="DaysToComplete"
-            {...getFieldProps('DTC')}
-            error={Boolean(touched.DTC && errors.DTC)}
-            helperText={touched.DTC && errors.DTC}
-          />
-          <TextField
-            fullWidth
-            multiline
-            label="Advance Amount"
-            {...getFieldProps('advAmount')}
-            error={Boolean(touched.advAmount && errors.advAmount)}
-            helperText={touched.advAmount && errors.advAmount}
-          />
-          {settledAmount ? (
-            <TextField
-              fullWidth
-              multiline
-              label="Settled Amount"
-              {...getFieldProps('setAmount')}
-              error={Boolean(touched.setAmount && errors.setAmount)}
-              helperText={touched.setAmount && errors.setAmount}
-            />
-          ) : null}
+
+          <div
+            style={{
+              alignSelf: 'center',
+              width: '100%'
+            }}
+          >
+            <FormControl sx={{ width: '100%' }}>
+              <InputLabel id="demo-multiple-chip-label">Select People</InputLabel>
+              <Select
+                labelId="demo-multiple-chip-label"
+                id="demo-multiple-chip"
+                multiple
+                {...getFieldProps('Q_assigned_people')}
+                // onChange={handleChange}
+                error={Boolean(touched.Q_assigned_people && errors.Q_assigned_people)}
+                input={<OutlinedInput id="select-multiple-chip" label="People" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((value) => (
+                      <Chip key={value.email} label={value.email} />
+                    ))}
+                  </Box>
+                )}
+                MenuProps={MenuProps}
+              >
+                {MTUsersName &&
+                  MTUsersName.map((data) => (
+                    <MenuItem
+                      key={data._id}
+                      value={data}
+                      style={getStyles(data.username, personName, theme)}
+                    >
+                      <Box sx={{ width: '100%' }}>
+                        <Typography variant="h6">{data.username}</Typography>
+                        <Typography variant="h7" sx={{ color: 'text.secondary' }}>
+                          {data.email}
+                        </Typography>
+                        <Divider />
+                      </Box>
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </div>
+
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Stack spacing={3}>
               {/* <DesktopDatePicker
@@ -285,34 +255,16 @@ export default function MTAdminForm({
                 onChange={handleDateChange}
                 renderInput={(params) => <TextField {...params} />}
               />
+              <MobileDatePicker
+                label="Start Date"
+                inputFormat="dd/MM/yyyy"
+                value={CurrentDatevalue}
+                disabled
+                // onChange={handleDateChange}
+                renderInput={(params) => <TextField {...params} />}
+              />
             </Stack>
           </LocalizationProvider>
-
-          <div
-            style={{
-              alignSelf: 'center',
-              width: '100%'
-            }}
-          >
-            <Box sx={{ minWidth: 120 }}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">{state}</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  disabled
-                  label="Role"
-                  value={state}
-                >
-                  {contractstatusArray.map((state) => (
-                    <MenuItem key={state} value={state}>
-                      {state}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          </div>
 
           <LoadingButton
             fullWidth

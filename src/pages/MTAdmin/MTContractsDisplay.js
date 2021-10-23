@@ -31,22 +31,24 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
 // components
-import Page from '../components/Page';
-import Label from '../components/Label';
-import Scrollbar from '../components/Scrollbar';
-import SearchNotFound from '../components/SearchNotFound';
-import { UserListHead, UserListToolbar, UserMoreMenu } from '../components/_dashboard/user';
+import Page from '../../components/Page';
+import Label from '../../components/Label';
+import Scrollbar from '../../components/Scrollbar';
+import SearchNotFound from '../../components/SearchNotFound';
+import { UserListHead, UserListToolbar, UserMoreMenu } from '../../components/_dashboard/user';
 //
-import USERLIST from '../_mocks_/user';
-import { fDate } from '../utils/formatTime';
-import { getContractsDataAsync } from '../features/movetech/moveTechSlice';
-import { deleteContract } from '../api/apicalls';
+import USERLIST from '../../_mocks_/user';
+import { fDate } from '../../utils/formatTime';
+import { getContractsDataAsync } from '../../features/movetech/moveTechSlice';
+import { deleteQuotation } from '../../api/apicalls';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'contractname', label: 'Contract Name', alignRight: false },
+  { id: 'customerName', label: 'Customer Name', alignRight: false },
   { id: 'details', label: 'Details', alignRight: false },
-  { id: 'people', label: 'People', alignRight: false },
+  { id: 'requirements', label: 'Requirements', alignRight: false },
+  { id: 'amount', label: 'Amount', alignRight: false },
+  { id: 'daystocomplete', label: 'Days to Complete', alignRight: false },
   { id: 'state', label: 'State', alignRight: false },
   { id: 'createdby', label: 'Created By', alignRight: false },
   { id: 'updated', label: 'Updated By', alignRight: false },
@@ -84,7 +86,7 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     return filter(
       array,
-      (_user) => _user.contractname.toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (_user) => _user.customerName.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
@@ -128,13 +130,13 @@ export default function MTContractsDisplay() {
   const theme = useTheme();
 
   const token = useSelector((state) => state.auth.token);
-  const CONTRACTS = useSelector((state) => state.movetech.getcontractdata);
+  const QUOTATIONS = useSelector((state) => state.movetech.getquotationsdata);
 
-  console.log(CONTRACTS, '-----------------------------');
+  console.log(QUOTATIONS, '-----------------------------');
   const [page, setPage] = useState(0);
   const [order, setOrder] = useState('asc');
   // const [selected, setSelected] = useState([]);
-  const [orderBy, setOrderBy] = useState('contractname');
+  const [orderBy, setOrderBy] = useState('customerName');
   const [filterName, setFilterName] = useState('');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   // const [personNames, setPersonNames] = React.useState([]);
@@ -143,14 +145,14 @@ export default function MTContractsDisplay() {
     dispatch(getContractsDataAsync({ token }));
   }, []);
 
-  const handleDeleteContract = async (id) => {
-    const isDeleted = await deleteContract(id, token);
+  const handleDeleteQuotation = async (id) => {
+    const isDeleted = await deleteQuotation(id, token);
 
     if (isDeleted) {
       dispatch(getContractsDataAsync({ token }));
-      alert('Contract is Deleted');
+      alert('Quotation is Deleted');
     } else {
-      alert('Error Could not Contract');
+      alert('Error Could not Quotation');
     }
   };
 
@@ -200,9 +202,9 @@ export default function MTContractsDisplay() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - CONTRACTS.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - QUOTATIONS.length) : 0;
 
-  const filteredUsers = applySortFilter(CONTRACTS, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(QUOTATIONS, getComparator(order, orderBy), filterName);
 
   const isUserNotFound = filteredUsers.length === 0;
 
@@ -237,7 +239,7 @@ export default function MTContractsDisplay() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={CONTRACTS.length}
+                  rowCount={QUOTATIONS.length}
                   // numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   // onSelectAllClick={handleSelectAllClick}
@@ -248,14 +250,20 @@ export default function MTContractsDisplay() {
                     .map((row) => {
                       const {
                         _id,
-                        contractname,
-                        contractdetails,
-                        createdby,
+                        customerName,
+                        quotationDetails,
+                        createdBy,
                         state,
                         createdAt,
                         updatedAt,
-                        updatedby,
-                        people
+                        updatedBy,
+                        requirements,
+                        amount,
+                        daysToComplete,
+                        people,
+                        advanceAmount,
+                        deliveryDate,
+                        settledAmount
                       } = row;
                       // const isItemSelected = selected.indexOf(username) !== -1;
 
@@ -282,15 +290,14 @@ export default function MTContractsDisplay() {
                               </Typography>
                             </Stack>
                           </TableCell> */}
-                          <TableCell align="left">{contractname}</TableCell>
+                          <TableCell align="left">{customerName}</TableCell>
                           <TableCell align="left">
-                            {contractdetails.slice(0, 70)}
-                            {contractdetails.length > 40 ? '...' : ''}
+                            {quotationDetails.slice(0, 70)}
+                            {quotationDetails.length > 40 ? '...' : ''}
                           </TableCell>
-                          <TableCell align="left">
+                          {/* <TableCell align="left">
                             <div>
                               <FormControl sx={{ m: 1, width: 150 }} disabled>
-                                {/* <InputLabel id="demo-multiple-chip-label">Chip</InputLabel> */}
                                 <Select
                                   labelId="demo-multiple-chip-label"
                                   id="demo-multiple-chip"
@@ -307,33 +314,36 @@ export default function MTContractsDisplay() {
                                   )}
                                   MenuProps={MenuProps}
                                 >
-                                  {/* {people.map(({username}) => (
-                                    <MenuItem
-                                      key={username}
-                                      value={username}
-                                      // style={getStyles(name, personNames, theme)}
-                                    >
-                                      {username}
-                                    </MenuItem>
-                                  ))} */}
                                 </Select>
                               </FormControl>
                             </div>
-                          </TableCell>
+                          </TableCell> */}
+
+                          {requirements ? (
+                            <TableCell align="left">
+                              {requirements.slice(0, 70)}
+                              {requirements.length > 40 ? '...' : ''}
+                            </TableCell>
+                          ) : (
+                            <TableCell align="center">-</TableCell>
+                          )}
+                          <TableCell align="left">{amount}</TableCell>
+                          <TableCell align="left">{daysToComplete}</TableCell>
                           <TableCell align="left">
                             <Label
                               variant="ghost"
                               color={
-                                (state === 'ONGOING' && 'info') ||
-                                (state === 'DONE' && 'success') ||
+                                (state === 'PENDING' && 'info') ||
+                                (state === 'APPROVED' && 'success') ||
+                                (state === 'DONE' && 'warning') ||
                                 'error'
                               }
                             >
                               {state}
                             </Label>
                           </TableCell>
-                          <TableCell align="left">{createdby[0].username}</TableCell>
-                          <TableCell align="left">{updatedby[0].username}</TableCell>
+                          <TableCell align="left">{createdBy.username}</TableCell>
+                          <TableCell align="left">{updatedBy.username}</TableCell>
                           <TableCell align="left">{fDate(updatedAt)}</TableCell>
 
                           <TableCell align="left">{fDate(createdAt)}</TableCell>
@@ -343,12 +353,16 @@ export default function MTContractsDisplay() {
                           <TableCell align="right">
                             <UserMoreMenu
                               id={_id}
-                              DeleteContract={handleDeleteContract}
-                              contractname={contractname}
-                              contractdetails={contractdetails}
-                              people={people}
-                              contractId={_id}
+                              handleDeleteQuotation={handleDeleteQuotation}
+                              customerName={customerName}
+                              quotationDetails={quotationDetails}
                               state={state}
+                              requirements={requirements}
+                              amount={amount}
+                              daysToComplete={daysToComplete}
+                              advanceAmount={advanceAmount}
+                              settledAmount={settledAmount}
+                              deliveryDate={deliveryDate}
                             />
                           </TableCell>
                         </TableRow>
@@ -376,7 +390,7 @@ export default function MTContractsDisplay() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={CONTRACTS.length}
+            count={QUOTATIONS.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

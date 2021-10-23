@@ -73,29 +73,18 @@ export default function MTAdminForm({ email = '', username = '', role = Roles.MT
   const status = useSelector((state) => state.movetech.status);
   const error = useSelector((state) => state.movetech.error);
   const success = useSelector((state) => state.movetech.success);
-  const getuserdata = useSelector((state) => state.movetech.getuserdata);
 
   const token = useSelector((state) => state.auth.token);
 
   const [open, setOpen] = useState(false);
   const [openSuccess, setopenSuccess] = useState(false);
 
-  const [personName, setPersonName] = useState([]);
-  const [MTUsersName, setMTUsersName] = useState([]);
-
   useEffect(() => {
     dispatch(resetData());
-    dispatch(getMTUserDataAsync({ token }));
   }, []);
 
   useEffect(() => {
-    if (getuserdata) {
-      setMTUsersName(getuserdata);
-    }
-  }, [getuserdata]);
-
-  useEffect(() => {
-    if (error?.errors?.other || error?.errors?.contractpeople) {
+    if (error?.errors) {
       setOpen(true);
     }
   }, [error]);
@@ -103,25 +92,36 @@ export default function MTAdminForm({ email = '', username = '', role = Roles.MT
   useEffect(() => {
     if (success) {
       setopenSuccess(true);
-      resetForm({ Co_Name: '', Co_details: '', Co_assigned_people: [] });
+      resetForm({
+        Co_Name: '',
+        Q_details: '',
+        Q_requirements: '',
+        Q_amount: '',
+        Q_daysToComplete: ''
+      });
       setTimeout(() => {
         dispatch(resetData());
       }, 2000);
     }
   }, [success]);
-  console.log(getuserdata, '----------getuserdata');
 
   const FormSchema = Yup.object().shape({
-    Co_Name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('First name required'),
-    Co_details: Yup.string().required('Email is required'),
-    Co_assigned_people: Yup.array().min(1)
+    Co_Name: Yup.string()
+      .min(2, 'Too Short!')
+      .max(50, 'Too Long!')
+      .required('Customer Name required'),
+    Q_details: Yup.string().required('Quotation details is required'),
+    Q_amount: Yup.number().required('Quotation amount is required'),
+    Q_daysToComplete: Yup.number().required('Quotation days to complete is required')
   });
 
   const formik = useFormik({
     initialValues: {
       Co_Name: '',
-      Co_details: '',
-      Co_assigned_people: []
+      Q_details: '',
+      Q_requirements: '',
+      Q_amount: '',
+      Q_daysToComplete: ''
     },
     validationSchema: FormSchema,
     onSubmit: (data) => {
@@ -129,9 +129,11 @@ export default function MTAdminForm({ email = '', username = '', role = Roles.MT
       dispatch(resetData());
       dispatch(
         createContractAsync({
-          contractname: data.Co_Name,
-          contractdetails: data.Co_details,
-          assignedpeople: data.Co_assigned_people,
+          customerName: data.Co_Name,
+          quotationDetails: data.Q_details,
+          requirements: data.Q_requirements,
+          amount: data.Q_amount,
+          daysToComplete: data.Q_daysToComplete,
           token
         })
       );
@@ -155,16 +157,6 @@ export default function MTAdminForm({ email = '', username = '', role = Roles.MT
     setopenSuccess(false);
   };
 
-  const handleChange = (event) => {
-    const {
-      target: { value }
-    } = event;
-    setPersonName(
-      // On autofill we get a the stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    );
-  };
-
   const { errors, touched, handleSubmit, isSubmitting, getFieldProps, resetForm } = formik;
 
   return (
@@ -174,68 +166,55 @@ export default function MTAdminForm({ email = '', username = '', role = Roles.MT
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <TextField
               fullWidth
-              label="Contract Name"
+              label="Customer Name"
               {...getFieldProps('Co_Name')}
               error={Boolean(
-                (touched.Co_Name && errors.Co_Name) || (error?.errors?.contractname ?? false)
+                (touched.Co_Name && errors.Co_Name) || (error?.errors?.customerName ?? false)
               )}
-              helperText={(touched.Co_Name && errors.Co_Name) || error?.errors?.contractname}
+              helperText={(touched.Co_Name && errors.Co_Name) || error?.errors?.customerName}
             />
           </Stack>
           <TextField
             fullWidth
             multiline
-            label="Contract Details"
-            {...getFieldProps('Co_details')}
+            label="Quotation Details"
+            {...getFieldProps('Q_details')}
             error={Boolean(
-              (touched.email && errors.email) || (error?.errors?.contractdetails ?? false)
+              (touched.Q_details && errors.Q_details) || (error?.errors?.quotationDetails ?? false)
             )}
-            helperText={(touched.email && errors.email) || error?.errors?.contractdetails}
+            helperText={(touched.Q_details && errors.Q_details) || error?.errors?.quotationDetails}
           />
-
-          <div
-            style={{
-              alignSelf: 'center',
-              width: '100%'
-            }}
-          >
-            <FormControl sx={{ m: 1, width: '100%' }}>
-              <InputLabel id="demo-multiple-chip-label">Select People</InputLabel>
-              <Select
-                labelId="demo-multiple-chip-label"
-                id="demo-multiple-chip"
-                multiple
-                {...getFieldProps('Co_assigned_people')}
-                // onChange={handleChange}
-                input={<OutlinedInput id="select-multiple-chip" label="People" />}
-                renderValue={(selected) => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {selected.map((value) => (
-                      <Chip key={value._id} label={value.email} />
-                    ))}
-                  </Box>
-                )}
-                MenuProps={MenuProps}
-              >
-                {MTUsersName &&
-                  MTUsersName.map((data) => (
-                    <MenuItem
-                      key={data._id}
-                      value={data}
-                      style={getStyles(data.username, personName, theme)}
-                    >
-                      <Box sx={{ width: '100%' }}>
-                        <Typography variant="h6">{data.username}</Typography>
-                        <Typography variant="h7" sx={{ color: 'text.secondary' }}>
-                          {data.email}
-                        </Typography>
-                        <Divider />
-                      </Box>
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
-          </div>
+          <TextField
+            fullWidth
+            multiline
+            label="Requirements"
+            {...getFieldProps('Q_requirements')}
+            error={Boolean(touched.Q_requirements && errors.Q_requirements)}
+            helperText={touched.Q_requirements && errors.Q_requirements}
+          />
+          <TextField
+            fullWidth
+            multiline
+            label="Amount"
+            {...getFieldProps('Q_amount')}
+            error={Boolean(
+              (touched.Q_amount && errors.Q_amount) || (error?.errors?.amount ?? false)
+            )}
+            helperText={(touched.Q_amount && errors.Q_amount) || error?.errors?.amount}
+          />
+          <TextField
+            fullWidth
+            multiline
+            label="Days To Complete"
+            {...getFieldProps('Q_daysToComplete')}
+            error={Boolean(
+              (touched.Q_daysToComplete && errors.Q_daysToComplete) ||
+                (error?.errors?.daysToComplete ?? false)
+            )}
+            helperText={
+              (touched.Q_daysToComplete && errors.Q_daysToComplete) || error?.errors?.daysToComplete
+            }
+          />
 
           <LoadingButton
             fullWidth

@@ -13,12 +13,16 @@ import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Alert } from '@
 
 export default function UserMoreMenu({
   id,
-  DeleteContract,
-  contractname,
-  contractdetails,
-  people,
-  contractId,
-  state
+  handleDeleteQuotation,
+  customerName,
+  quotationDetails,
+  state,
+  requirements,
+  amount,
+  daysToComplete,
+  advanceAmount,
+  deliveryDate,
+  settledAmount
 }) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +35,7 @@ export default function UserMoreMenu({
       buttons: [
         {
           label: 'Yes',
-          onClick: () => DeleteContract(id)
+          onClick: () => handleDeleteQuotation(id)
         },
         {
           label: 'No',
@@ -63,17 +67,56 @@ export default function UserMoreMenu({
           <ListItemText primary="Delete" primaryTypographyProps={{ variant: 'body2' }} />
         </MenuItem>
 
-        <MenuItem
-          component={RouterLink}
-          to="/dashboard/movetech/editcontract"
-          state={{ contractname, contractdetails, people, contractId, state }}
-          sx={{ color: 'text.secondary' }}
-        >
-          <ListItemIcon>
-            <Icon icon={editFill} width={24} height={24} />
-          </ListItemIcon>
-          <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
-        </MenuItem>
+        {state === 'PENDING' ? (
+          <MenuItem
+            component={RouterLink}
+            to="/dashboard/movetech/approve-quotation"
+            state={{ id }}
+            sx={{ color: 'text.secondary' }}
+          >
+            <ListItemIcon>
+              <Icon icon={editFill} width={24} height={24} />
+            </ListItemIcon>
+            <ListItemText primary="Approve" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>
+        ) : state === 'APPROVED' ? (
+          <MenuItem
+            component={RouterLink}
+            to="/dashboard/movetech/end-quotation"
+            state={{ id }}
+            sx={{ color: 'text.secondary' }}
+          >
+            <ListItemIcon>
+              <Icon icon={editFill} width={24} height={24} />
+            </ListItemIcon>
+            <ListItemText primary="End" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>
+        ) : null}
+
+        {state === 'APPROVED' || state === 'DONE' ? (
+          <MenuItem
+            component={RouterLink}
+            to="/dashboard/movetech/edit-quotation"
+            state={{
+              id,
+              customerName,
+              quotationDetails,
+              state,
+              requirements,
+              amount,
+              daysToComplete,
+              advanceAmount,
+              deliveryDate,
+              settledAmount
+            }}
+            sx={{ color: 'text.secondary' }}
+          >
+            <ListItemIcon>
+              <Icon icon={editFill} width={24} height={24} />
+            </ListItemIcon>
+            <ListItemText primary="Edit" primaryTypographyProps={{ variant: 'body2' }} />
+          </MenuItem>
+        ) : null}
       </Menu>
     </>
   );

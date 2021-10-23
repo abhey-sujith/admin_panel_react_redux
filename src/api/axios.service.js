@@ -22,14 +22,14 @@ const AxiosService = {
         console.log(
           'error.response.status / message--- ',
           error.response?.status,
-          error.response?.message
+          error.response?.data?.message
         );
 
         // if refresh token is rejected the user is logged out
         if (
           error?.response?.status === 401 &&
-          (error?.response?.message === 'Token is not valid' ||
-            error?.response?.message === 'Auth token is not supplied')
+          (error.response?.data?.message === 'Token is not valid' ||
+            error.response?.data?.message === 'Auth token is not supplied')
         ) {
           console.log('logging out-----');
           logout(store.dispatch);

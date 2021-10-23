@@ -16,6 +16,8 @@ export const Roles = {
 export const RolesArray = Object.keys(Roles);
 
 export const contractstatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
   ONGOING: 'ONGOING',
   DONE: 'DONE',
   SUSPENDED: 'SUSPENDED'

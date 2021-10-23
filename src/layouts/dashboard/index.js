@@ -143,7 +143,7 @@ export default function DashboardLayout() {
                   fullWidth
                   autoComplete="current-password"
                   type={showPassword ? 'text' : 'password'}
-                  label="Password"
+                  label="Change Password"
                   {...getFieldProps('password')}
                   InputProps={{
                     endAdornment: (
@@ -184,7 +184,7 @@ export default function DashboardLayout() {
                 variant="contained"
                 loading={loading === 'loading' || false}
               >
-                Login
+                Submit
               </LoadingButton>
               <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>

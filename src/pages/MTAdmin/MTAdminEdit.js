@@ -4,8 +4,8 @@ import { styled } from '@mui/material/styles';
 import { Box, Card, Link, Container, Typography } from '@mui/material';
 // layouts
 // components
-import Page from '../components/Page';
-import { MTAdminFormEdit } from '../components/movetech';
+import Page from '../../components/Page';
+import { MTAdminFormEdit } from '../../components/movetech';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +39,18 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function MTAdminEdit() {
   const location = useLocation();
   console.log(location.state, '---------location.state');
-  const { contractname, contractdetails, people, contractId, state } = location.state;
+  const {
+    id,
+    customerName,
+    quotationDetails,
+    state,
+    requirements,
+    amount,
+    daysToComplete,
+    advanceAmount,
+    deliveryDate,
+    settledAmount
+  } = location.state;
 
   return (
     <RootStyle title="Register | Minimal-UI">
@@ -47,7 +58,7 @@ export default function MTAdminEdit() {
         <ContentStyle>
           <Box sx={{ mb: 5 }}>
             <Typography variant="h4" gutterBottom>
-              Add Contract
+              Edit Quotation
             </Typography>
             {/* <Typography sx={{ color: 'text.secondary' }}>
               Free forever. No credit card needed.
@@ -55,11 +66,16 @@ export default function MTAdminEdit() {
           </Box>
 
           <MTAdminFormEdit
-            contractname={contractname}
-            contractdetails={contractdetails}
-            people={people}
-            contractId={contractId}
+            id={id}
+            customerName={customerName}
+            quotationDetails={quotationDetails}
             state={state}
+            requirements={requirements}
+            amount={amount}
+            daysToComplete={daysToComplete}
+            advanceAmount={advanceAmount}
+            deliveryDate={deliveryDate}
+            settledAmount={settledAmount}
           />
         </ContentStyle>
       </Container>

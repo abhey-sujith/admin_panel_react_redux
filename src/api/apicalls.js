@@ -41,14 +41,14 @@ export const deleteUser = async (id, token) => {
   }
 };
 
-export const deleteContract = async (id, token) => {
+export const deleteQuotation = async (id, token) => {
   try {
     console.log(id);
     const response = await axios({
       method: 'DELETE',
-      url: `${config.API_URL}/api/deletemtcontract`,
+      url: `${config.API_URL}/api/deletemtquotation`,
       data: {
-        contractId: id
+        quotationId: id
       },
       headers: {
         'Content-Type': 'application/json',

@@ -31,32 +31,32 @@ const sidebarConfig = [
     permission: [Roles.SUPER_ADMIN]
   },
   {
-    title: 'Create Contract',
+    title: 'Create Quotation',
     path: '/dashboard/movetech/create',
     icon: getIcon(peopleFill),
     permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
   },
   {
-    title: 'Show Contracts',
+    title: 'Show Quotation',
     path: '/dashboard/movetech/display-contracts',
     icon: getIcon(peopleFill),
     permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
   },
   {
-    title: 'Contracts Available',
-    path: '/dashboard/movetech/contracts-available',
+    title: 'Quotation Available',
+    path: '/dashboard/movetech/quotation-available',
     icon: getIcon(peopleFill),
     permission: [Roles.MT_USER]
   },
   {
-    title: 'Contracts Accepted',
-    path: '/dashboard/movetech/contracts-accepted',
+    title: 'Quotation Accepted',
+    path: '/dashboard/movetech/quotation-accepted',
     icon: getIcon(peopleFill),
     permission: [Roles.MT_USER]
   },
   {
-    title: 'Contracts Done',
-    path: '/dashboard/movetech/contracts-done',
+    title: 'Quotation Done',
+    path: '/dashboard/movetech/quotation-done',
     icon: getIcon(peopleFill),
     permission: [Roles.MT_USER]
   },

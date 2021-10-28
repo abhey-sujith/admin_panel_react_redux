@@ -217,13 +217,43 @@ export const getContractsDataAsync = createAsyncThunk(
   }
 );
 
-export const getContractsAvailableAsync = createAsyncThunk(
-  'movetech/getContractsAvailableAsync',
+export const getQuotationsAsync = createAsyncThunk(
+  'movetech/getQuotationsAsync',
   async ({ token }, { rejectWithValue }) => {
     try {
       const response = await axios({
         method: 'GET',
-        url: `${config.API_URL}/api/getmt-availablecontract`,
+        url: `${config.API_URL}/api/getmt-quotations`,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response, '-------response');
+      return response.data.data;
+    } catch (err) {
+      console.log(err, '------------error', err.message);
+      if (err && err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const setQuotationtoAcceptedAsync = createAsyncThunk(
+  'movetech/setQuotationtoAcceptedAsync',
+  async ({ token, id, state }, { rejectWithValue }) => {
+    console.log('thunk--', token, id, state);
+
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: `${config.API_URL}/api/set-quotation`,
+        data: {
+          arrayElementId: id,
+          state
+        },
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`

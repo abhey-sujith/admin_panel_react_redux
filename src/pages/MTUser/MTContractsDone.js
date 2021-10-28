@@ -6,10 +6,13 @@ import { styled } from '@mui/material/styles';
 import { Box, Card, Link, Container, Typography } from '@mui/material';
 // layouts
 // components
-import Page from '../components/Page';
-import { MTAdminForm } from '../components/movetech';
-import { getContractsAvailableAsync } from '../features/movetech/moveTechSlice';
-
+import Page from '../../components/Page';
+import {
+  getQuotationsAsync,
+  setQuotationtoAcceptedAsync
+} from '../../features/movetech/moveTechSlice';
+import QuotationList from '../../components/movetech/quotationcard/QuotationList';
+import { contractstatus } from 'src/config';
 // ----------------------------------------------------------------------
 
 const RootStyle = styled(Page)(({ theme }) => ({
@@ -39,32 +42,33 @@ const ContentStyle = styled('div')(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function MTContractsAvailable() {
+export default function MTContractsAccepted() {
   const dispatch = useDispatch();
 
   const token = useSelector((state) => state.auth.token);
-  const CONTRACTSAVAILABLE = useSelector((state) => state.movetech.getContractAvailableData);
-  const CONTRACTPEOPLE = useSelector((state) => state.movetech.getContractAvailablePeopleData);
+  const QUOTATIONSDATA = useSelector((state) => state.movetech.getQuotationsData);
   useEffect(() => {
-    dispatch(getContractsAvailableAsync({ token }));
+    dispatch(getQuotationsAsync({ token }));
   }, []);
-  console.log(CONTRACTSAVAILABLE, '--------------CONTRACTSAVAILABLE--');
-  console.log(CONTRACTPEOPLE, '--------------CONTRACTPEOPLE--');
+  console.log(QUOTATIONSDATA, '--------------QUOTATIONSDATA--');
+
+  const handleClick = (id, state = 'DONE') => {};
 
   return (
-    <RootStyle title="Register | Minimal-UI">
+    <Page title="Dashboard: Products | Minimal-UI">
       <Container>
-        <ContentStyle>
-          <Box sx={{ mb: 5 }}>
-            {/* <Typography variant="h4" gutterBottom>
-              Contracts Available
-            </Typography> */}
-            {/* <Typography sx={{ color: 'text.secondary' }}>
-              Free forever. No credit card needed.
-            </Typography> */}
-          </Box>
-        </ContentStyle>
+        <Typography variant="h4" sx={{ mb: 5 }}>
+          Quotations Done
+        </Typography>
+
+        <QuotationList
+          quotations={QUOTATIONSDATA}
+          handleClick={handleClick}
+          stateValue={contractstatus.DONE}
+          buttonValue={''}
+          showButton={false}
+        />
       </Container>
-    </RootStyle>
+    </Page>
   );
 }

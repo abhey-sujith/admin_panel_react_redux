@@ -71,7 +71,7 @@ export default function UserMoreMenu({
           <MenuItem
             component={RouterLink}
             to="/dashboard/movetech/approve-quotation"
-            state={{ id }}
+            state={{ id, amount, daysToComplete }}
             sx={{ color: 'text.secondary' }}
           >
             <ListItemIcon>

@@ -68,7 +68,13 @@ const Alert = forwardRef((props, ref) => (
   <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />
 ));
 
-export default function MTAdminFormApprove({ id = '' }) {
+function addDays(days) {
+  var result = new Date();
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+export default function MTAdminFormApprove({ id = '', amount = 0, daysToComplete = 0 }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -87,7 +93,7 @@ export default function MTAdminFormApprove({ id = '' }) {
   const [personName, setPersonName] = useState([]);
   const [MTUsersName, setMTUsersName] = useState([]);
 
-  const [DeliveryDatevalue, setDeliveryDatevalue] = useState(new Date());
+  const [DeliveryDatevalue, setDeliveryDatevalue] = useState(addDays(daysToComplete));
   const [CurrentDatevalue, setCurrentDatevalue] = useState(new Date());
 
   useEffect(() => {
@@ -120,13 +126,13 @@ export default function MTAdminFormApprove({ id = '' }) {
   console.log(getuserdata, '----------getuserdata');
 
   const FormSchema = Yup.object().shape({
-    Q_advance_amount: Yup.number().required('Quotation Advance Amount is required'),
+    Q_advance_amount: Yup.number().required('Quotation Advance Amount is required').max(amount),
     Q_assigned_people: Yup.array().min(1)
   });
 
   const formik = useFormik({
     initialValues: {
-      Q_advance_amount: 0,
+      Q_advance_amount: amount / 2,
       Q_assigned_people: []
     },
     validationSchema: FormSchema,

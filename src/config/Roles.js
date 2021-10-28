@@ -20,7 +20,8 @@ export const contractstatus = {
   APPROVED: 'APPROVED',
   ONGOING: 'ONGOING',
   DONE: 'DONE',
-  SUSPENDED: 'SUSPENDED'
+  SUSPENDED: 'SUSPENDED',
+  ACCEPTED: 'ACCEPTED'
 };
 
 export const contractstatusArray = Object.keys(contractstatus);

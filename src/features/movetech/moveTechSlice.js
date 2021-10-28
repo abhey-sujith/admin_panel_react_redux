@@ -4,9 +4,10 @@ import {
   createContractAsync,
   getContractsDataAsync,
   editQuotationAsync,
-  getContractsAvailableAsync,
+  getQuotationsAsync,
   approveQuotationAsync,
-  endQuotationAsync
+  endQuotationAsync,
+  setQuotationtoAcceptedAsync
 } from './moveTechThunk';
 
 export const movetechInitialState = {
@@ -19,10 +20,12 @@ export const movetechInitialState = {
   getcontractstatus: 'idle',
   getcontracterror: '',
   getquotationsdata: [],
-  getContractAvailableStatus: 'idle',
-  getContractAvailableError: '',
-  getContractAvailableData: [],
-  getContractAvailablePeopleData: []
+  getQuotationsStatus: 'idle',
+  getQuotationsError: '',
+  getQuotationsData: [],
+  setQuotationStatus: 'idle',
+  setQuotationError: '',
+  setQuotationisSuccess: false
 };
 
 export const movetechSlice = createSlice({
@@ -116,28 +119,31 @@ export const movetechSlice = createSlice({
         state.getquotationsdata = action.payload;
         console.log(action.payload, '---------------action.payload');
       })
-      .addCase(getContractsAvailableAsync.pending, (state) => {
-        state.getContractAvailableStatus = 'loading';
+      .addCase(getQuotationsAsync.pending, (state) => {
+        state.getContractStatus = 'loading';
       })
-      .addCase(getContractsAvailableAsync.rejected, (state, action) => {
+      .addCase(getQuotationsAsync.rejected, (state, action) => {
+        state.getContractStatus = 'idle';
+        console.log(action.payload, '---------------action.payload');
+        state.getContractError = action.payload;
+      })
+      .addCase(getQuotationsAsync.fulfilled, (state, action) => {
+        state.getContractStatus = 'idle';
+        console.log(action.payload, '---------------action.payload-----');
+        state.getQuotationsData = action.payload.quotationDetails;
+      })
+      .addCase(setQuotationtoAcceptedAsync.pending, (state) => {
+        state.setQuotationStatus = 'loading';
+      })
+      .addCase(setQuotationtoAcceptedAsync.rejected, (state, action) => {
         state.getContractAvailableStatus = 'idle';
         console.log(action.payload, '---------------action.payload');
-        state.getContractAvailableError = action.payload;
+        state.setQuotationError = action.payload;
       })
-      .addCase(getContractsAvailableAsync.fulfilled, (state, action) => {
+      .addCase(setQuotationtoAcceptedAsync.fulfilled, (state, action) => {
         state.getContractAvailableStatus = 'idle';
         console.log(action.payload, '---------------action.payload-----');
-        if (action.payload.data.length === 1) {
-          console.log('innnnnnn');
-          state.getContractAvailableData = action.payload.data[0].availablecontracts;
-        }
-        console.log(action.payload.people, '-----ppp');
-        if (action.payload.people.length === 1) {
-          console.log('innnnnnn222');
-          state.getContractAvailablePeopleData = action.payload.people;
-        }
-
-        // state.getContractAvailableData = action.payload.;
+        state.setQuotationisSuccess = true;
       });
   }
 });
@@ -150,9 +156,10 @@ export {
   createContractAsync,
   getContractsDataAsync,
   editQuotationAsync,
-  getContractsAvailableAsync,
+  getQuotationsAsync,
   approveQuotationAsync,
-  endQuotationAsync
+  endQuotationAsync,
+  setQuotationtoAcceptedAsync
 };
 
 export default movetechSlice.reducer;

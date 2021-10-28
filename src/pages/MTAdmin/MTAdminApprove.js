@@ -39,7 +39,7 @@ const ContentStyle = styled('div')(({ theme }) => ({
 export default function MTAdminApprove() {
   const location = useLocation();
   console.log(location.state, '---------location.state');
-  const { id } = location.state;
+  const { id, amount, daysToComplete } = location.state;
 
   return (
     <RootStyle title="Register | Minimal-UI">
@@ -54,7 +54,7 @@ export default function MTAdminApprove() {
             </Typography> */}
           </Box>
 
-          <MTAdminFormApprove id={id} />
+          <MTAdminFormApprove id={id} amount={amount} daysToComplete={daysToComplete} />
         </ContentStyle>
       </Container>
     </RootStyle>

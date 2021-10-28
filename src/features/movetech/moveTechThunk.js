@@ -243,7 +243,7 @@ export const getQuotationsAsync = createAsyncThunk(
 
 export const setQuotationtoAcceptedAsync = createAsyncThunk(
   'movetech/setQuotationtoAcceptedAsync',
-  async ({ token, id, state }, { rejectWithValue }) => {
+  async ({ token, id, state, settledAmount = null, quotationId = null }, { rejectWithValue }) => {
     console.log('thunk--', token, id, state);
 
     try {
@@ -252,7 +252,9 @@ export const setQuotationtoAcceptedAsync = createAsyncThunk(
         url: `${config.API_URL}/api/set-quotation`,
         data: {
           arrayElementId: id,
-          state
+          state,
+          settledAmount,
+          quotationId
         },
         headers: {
           'Content-Type': 'application/json',

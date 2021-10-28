@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
 // material
-import { Box, Card, Link, Typography, Stack } from '@mui/material';
+import { Box, Card, Link, Typography, Stack, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import Button from '@mui/material/Button';
@@ -14,6 +14,8 @@ import ColorPreview from '../../ColorPreview';
 // utils
 import { fDate, fToNow } from '../../../utils/formatTime';
 import { fShortenNumber } from '../../../utils/formatNumber';
+import { useState } from 'react';
+import { contractstatus } from 'src/config';
 // ----------------------------------------------------------------------
 
 const ProductImgStyle = styled('img')({
@@ -37,11 +39,26 @@ export default function QuotationCard({
   showButton,
   buttonValue
 }) {
-  const { customerName, quotationDetails, requirements, deliveryDate, people, state, startDate } =
-    quotation.quotation;
+  const {
+    _id: quotationId,
+    customerName,
+    quotationDetails,
+    requirements,
+    deliveryDate,
+    people,
+    startDate,
+    amount,
+    advanceAmount,
+    settledAmount
+  } = quotation.quotation;
 
-  const { _id } = quotation;
+  const { _id, state } = quotation;
 
+  const [SAmount, setSAmount] = useState(state === 'ONGOING' ? null : amount - advanceAmount);
+
+  const handleSettledAmountChange = (e) => {
+    setSAmount(e.target.value);
+  };
   return (
     <Card>
       <Box sx={{ p: '10%' }}>
@@ -71,13 +88,13 @@ export default function QuotationCard({
         <Typography variant="subtitle1" noWrap>
           Customer Name
         </Typography>
-        <Typography variant="subtitle3" noWrap>
+        <Typography variant="subtitle3" color={'#757575'} noWrap>
           {customerName}
         </Typography>
         <Typography variant="subtitle1" noWrap>
           Details
         </Typography>
-        <Typography variant="subtitle3" noWrap>
+        <Typography variant="subtitle3" color={'#757575'}>
           {quotationDetails}
         </Typography>
         {requirements ? (
@@ -86,14 +103,14 @@ export default function QuotationCard({
           </Typography>
         ) : null}
         {requirements ? (
-          <Typography variant="subtitle3" noWrap>
+          <Typography variant="subtitle3" color={'#757575'}>
             {requirements}
           </Typography>
         ) : null}
         <Typography variant="subtitle1" noWrap>
           Delivery Date
         </Typography>
-        <Typography variant="subtitle3">
+        <Typography variant="subtitle3" color={'#757575'}>
           {fDate(deliveryDate)}
           {/* {' - '}
           {fToNow(deliveryDate)}
@@ -103,15 +120,45 @@ export default function QuotationCard({
           Assigned People
         </Typography>
         {people.map((obj) => (
-          <Chip key={obj.email} label={obj.username} sx={{ mr: 1 }} />
+          <Chip key={obj.email} label={obj.username} sx={{ mr: 1, mt: 1 }} />
         ))}
       </Box>
+      {state === 'ACCEPTED' ? (
+        <>
+          {' '}
+          {settledAmount ? (
+            <TextField
+              fullWidth
+              label="Settled Amount"
+              value={settledAmount}
+              disabled
+              sx={{ pl: 2, pr: 2 }}
+              // error={Boolean(
+              //   (touched.Q_amount && errors.Q_amount) || (error?.errors?.amount ?? false)
+              // )}
+              // helperText={(touched.Q_amount && errors.Q_amount) || error?.errors?.amount}
+            />
+          ) : (
+            <TextField
+              fullWidth
+              label="Settled Amount"
+              value={SAmount}
+              onChange={handleSettledAmountChange}
+              sx={{ pl: 2, pr: 2 }}
+              // error={Boolean(
+              //   (touched.Q_amount && errors.Q_amount) || (error?.errors?.amount ?? false)
+              // )}
+              // helperText={(touched.Q_amount && errors.Q_amount) || error?.errors?.amount}
+            />
+          )}
+        </>
+      ) : null}
 
       {showButton ? (
         <Stack spacing={2} sx={{ p: 3 }}>
           {/* <Link to="#" color="inherit" underline="hover" component={RouterLink}> */}
           <Button
-            onClick={() => handleClick(_id)}
+            onClick={() => handleClick(_id, quotationId, settledAmount ? settledAmount : SAmount)}
             variant="contained"
             style={{ color: 'white', backgroundColor: '#ffb74d' }}
           >

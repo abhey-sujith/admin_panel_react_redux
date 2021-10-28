@@ -52,10 +52,13 @@ export default function MTContractsAvailable() {
   }, []);
   console.log(QUOTATIONSDATA, '--------------QUOTATIONSDATA--');
 
-  const handleClick = (id, state = 'ACCEPTED') => {
-    dispatch(setQuotationtoAcceptedAsync({ id, token, state })).then(() => {
-      dispatch(getQuotationsAsync({ token }));
-    });
+  const handleClick = (id, quotationId = null, settledAmount = null, state = 'ACCEPTED') => {
+    console.log(id, quotationId, settledAmount, state);
+    dispatch(setQuotationtoAcceptedAsync({ id, token, state, settledAmount, quotationId })).then(
+      () => {
+        dispatch(getQuotationsAsync({ token }));
+      }
+    );
   };
 
   return (

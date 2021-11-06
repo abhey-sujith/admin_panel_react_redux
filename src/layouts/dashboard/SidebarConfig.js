@@ -62,6 +62,12 @@ const sidebarConfig = [
     permission: [Roles.MT_USER]
   },
   {
+    title: 'Sales Dashboard',
+    path: '/dashboard/sales/dashboard',
+    icon: getIcon(peopleFill),
+    permission: [Roles.SALES_USER]
+  },
+  {
     title: 'Attendance',
     path: '/dashboard/sales/attendance',
     icon: getIcon(peopleFill),

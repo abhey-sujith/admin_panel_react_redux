@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 // material
 import { Box, Grid, Container, Typography } from '@mui/material';
 // components
-import Page from '../components/Page';
+import Page from '../../components/Page';
 import {
   AppTasks,
   AppNewUsers,
@@ -14,20 +16,32 @@ import {
   AppWebsiteVisits,
   AppTrafficBySite,
   AppCurrentSubject,
-  AppConversionRates
-} from '../components/_dashboard/app';
-
+  AppConversionRates,
+  AttendanceTimeline,
+  SaleTimeline
+} from '../../components/_dashboard/app';
+import { getAttendanceAsync, getSalesAsync } from '../../features/sales/salesSlice';
 // ----------------------------------------------------------------------
 
-export default function DashboardApp() {
+export default function SalesDashboard() {
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
+  const attendancedata = useSelector((state) => state.sales.getattendancedata);
+  const salesdata = useSelector((state) => state.sales.getsalesdata);
+
+  console.log(attendancedata, 'attendancedata-----', salesdata, '-------getsalesdata');
+  useEffect(() => {
+    dispatch(getAttendanceAsync({ token }));
+    dispatch(getSalesAsync({ token }));
+  }, []);
   return (
     <Page title="Dashboard | Minimal-UI">
       <Container maxWidth="xl">
-        <Box sx={{ pb: 5 }}>
+        {/* <Box sx={{ pb: 5 }}>
           <Typography variant="h4">Hi, Welcome back</Typography>
-        </Box>
+        </Box> */}
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
+          {/* <Grid item xs={12} sm={6} md={3}>
             <AppWeeklySales />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
@@ -58,19 +72,27 @@ export default function DashboardApp() {
 
           <Grid item xs={12} md={6} lg={8}>
             <AppNewsUpdate />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} md={6} lg={4}>
-            <AppOrderTimeline />
-          </Grid>
+          {attendancedata ? (
+            <Grid item xs={12} md={6} lg={4}>
+              <AttendanceTimeline attendancedata={attendancedata} />
+            </Grid>
+          ) : null}
 
-          <Grid item xs={12} md={6} lg={4}>
+          {salesdata ? (
+            <Grid item xs={12} md={6} lg={4}>
+              <SaleTimeline salesdata={salesdata} />
+            </Grid>
+          ) : null}
+
+          {/* <Grid item xs={12} md={6} lg={4}>
             <AppTrafficBySite />
           </Grid>
 
           <Grid item xs={12} md={6} lg={8}>
             <AppTasks />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </Page>

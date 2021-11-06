@@ -56,3 +56,28 @@ export const addAttendanceAsync = createAsyncThunk(
     }
   }
 );
+
+export const getSalesAsync = createAsyncThunk(
+  'sales/getSalesAsync',
+  async ({ token }, { rejectWithValue }) => {
+    try {
+      console.log(token, '---------token');
+      const response = await axios({
+        method: 'GET',
+        url: `${config.API_URL}/api/getusersale`,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response, '-------response');
+      return response.data.data;
+    } catch (err) {
+      console.log(err, '------------error', err.message);
+      if (err && err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);

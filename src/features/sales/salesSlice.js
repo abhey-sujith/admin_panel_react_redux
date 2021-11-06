@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { addAttendanceAsync, getAttendanceAsync } from './salesThunk';
+import { addAttendanceAsync, getAttendanceAsync, getSalesAsync } from './salesThunk';
 
 export const salesInitialState = {
   status: 'idle',
@@ -7,7 +7,10 @@ export const salesInitialState = {
   success: false,
   getattendancestatus: 'idle',
   getattendanceerror: '',
-  getattendancedata: null
+  getattendancedata: null,
+  getsalesstatus: 'idle',
+  getsaleserror: '',
+  getsalesdata: null
 };
 
 export const salesSlice = createSlice({
@@ -18,6 +21,7 @@ export const salesSlice = createSlice({
       console.log(action.payload, '-------------resetData');
       state.error = {};
       state.getattendanceerror = '';
+      state.getsaleserror = '';
       state.success = false;
     }
   },
@@ -48,6 +52,19 @@ export const salesSlice = createSlice({
         state.status = 'idle';
         state.success = true;
         console.log(action.payload, '---------------action.payload');
+      })
+      .addCase(getSalesAsync.pending, (state) => {
+        state.getsalesstatus = 'loading';
+      })
+      .addCase(getSalesAsync.rejected, (state, action) => {
+        state.getsalesstatus = 'idle';
+        console.log(action.payload, '---------------action.payload');
+        state.getsaleserror = action.payload;
+      })
+      .addCase(getSalesAsync.fulfilled, (state, action) => {
+        state.getsalesstatus = 'idle';
+        state.getsalesdata = action.payload;
+        console.log(action.payload, '---------------action.payload');
       });
   }
 });
@@ -55,6 +72,6 @@ export const salesSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const { resetData } = salesSlice.actions;
 
-export { addAttendanceAsync, getAttendanceAsync };
+export { addAttendanceAsync, getAttendanceAsync, getSalesAsync };
 
 export default salesSlice.reducer;

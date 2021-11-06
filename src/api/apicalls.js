@@ -62,3 +62,20 @@ export const deleteQuotation = async (id, token) => {
     return false;
   }
 };
+
+export const getgeoData = async (lat, lon) => {
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=16&addressdetails=1`,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    console.log(response, '-------response');
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+};

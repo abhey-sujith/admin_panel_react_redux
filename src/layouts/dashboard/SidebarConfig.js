@@ -16,7 +16,8 @@ const sidebarConfig = [
   {
     title: 'dashboard',
     path: '/dashboard/app',
-    icon: getIcon(pieChart2Fill)
+    icon: getIcon(pieChart2Fill),
+    permission: [Roles.SALES_USER]
   },
   {
     title: 'Register User',
@@ -59,6 +60,12 @@ const sidebarConfig = [
     path: '/dashboard/movetech/quotation-done',
     icon: getIcon(peopleFill),
     permission: [Roles.MT_USER]
+  },
+  {
+    title: 'Attendance',
+    path: '/dashboard/sales/attendance',
+    icon: getIcon(peopleFill),
+    permission: [Roles.SALES_USER]
   },
   {
     title: 'product',

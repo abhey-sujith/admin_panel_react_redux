@@ -14,6 +14,7 @@ import MTContractsAvailable from './pages/MTUser/MTContractsAvailable';
 import MTContractsAccepted from './pages/MTUser/MTContractsAccepted';
 import MTContractsDone from './pages/MTUser/MTContractsDone';
 import MTContractsDisplay from './pages/MTAdmin/MTContractsDisplay';
+import SalesAttendance from './pages/Sales/Attendance';
 import DashboardApp from './pages/DashboardApp';
 import Products from './pages/Products';
 import Blog from './pages/Blog';
@@ -45,7 +46,8 @@ export default function Router({ isLoggedIn }) {
         { path: 'movetech/end-quotation', element: <MTAdminEnd /> },
         { path: 'movetech/quotation-available', element: <MTContractsAvailable /> },
         { path: 'movetech/quotation-accepted', element: <MTContractsAccepted /> },
-        { path: 'movetech/quotation-done', element: <MTContractsDone /> }
+        { path: 'movetech/quotation-done', element: <MTContractsDone /> },
+        { path: 'sales/attendance', element: <SalesAttendance /> }
       ]
     },
     {

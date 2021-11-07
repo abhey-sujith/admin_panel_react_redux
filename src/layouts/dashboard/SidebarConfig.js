@@ -74,6 +74,12 @@ const sidebarConfig = [
     permission: [Roles.SALES_USER]
   },
   {
+    title: 'Add Sales',
+    path: '/dashboard/sales/addsales',
+    icon: getIcon(peopleFill),
+    permission: [Roles.SALES_USER]
+  },
+  {
     title: 'product',
     path: '/dashboard/products',
     icon: getIcon(shoppingBagFill)

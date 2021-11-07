@@ -81,3 +81,40 @@ export const getSalesAsync = createAsyncThunk(
     }
   }
 );
+
+export const addSalesAsync = createAsyncThunk(
+  'sales/addSalesAsync',
+  async (
+    { startDate, details, T_lead, T_activation, T_TDL, T_TSS, token },
+    { rejectWithValue }
+  ) => {
+    console.log('thunk', startDate, details, T_lead, T_activation, T_TDL, T_TSS, token);
+
+    try {
+      const response = await axios({
+        method: 'POST',
+        url: `${config.API_URL}/api/add-sales`,
+        data: {
+          startTime: startDate,
+          Details: details,
+          Total_Lead: T_lead,
+          Total_Acivation: T_activation,
+          Total_TDL: T_TDL,
+          Total_TSS: T_TSS
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log(response, '-------response');
+      return response.data;
+    } catch (err) {
+      console.log(err, '------------error', err.message);
+      if (err && err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);

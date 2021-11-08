@@ -44,6 +44,12 @@ const sidebarConfig = [
     permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
   },
   {
+    title: 'Show Contracts',
+    path: '/dashboard/movetech/display-quotations',
+    icon: getIcon(peopleFill),
+    permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
+  },
+  {
     title: 'Quotation Available',
     path: '/dashboard/movetech/quotation-available',
     icon: getIcon(peopleFill),

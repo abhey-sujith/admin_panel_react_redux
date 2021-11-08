@@ -26,6 +26,7 @@ export const salesSlice = createSlice({
       state.getattendanceerror = '';
       state.getsaleserror = '';
       state.success = false;
+      state.setaddSalesisSuccess = false;
     }
   },
   extraReducers: (builder) => {

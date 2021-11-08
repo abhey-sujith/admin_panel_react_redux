@@ -14,6 +14,7 @@ import MTContractsAvailable from './pages/MTUser/MTContractsAvailable';
 import MTContractsAccepted from './pages/MTUser/MTContractsAccepted';
 import MTContractsDone from './pages/MTUser/MTContractsDone';
 import MTContractsDisplay from './pages/MTAdmin/MTContractsDisplay';
+import MTQuotationDisplay from './pages/MTAdmin/MTQuotationDisplay';
 import SalesAttendance from './pages/Sales/Attendance';
 import SalesDashboard from './pages/Sales/SalesDashboard';
 import AddSales from './pages/Sales/AddSales';
@@ -43,6 +44,7 @@ export default function Router({ isLoggedIn }) {
         { path: 'edit', element: <Edit /> },
         { path: 'movetech/create', element: <MTAdmin /> },
         { path: 'movetech/display-contracts', element: <MTContractsDisplay /> },
+        { path: 'movetech/display-quotations', element: <MTQuotationDisplay /> },
         { path: 'movetech/edit-quotation', element: <MTAdminEdit /> },
         { path: 'movetech/approve-quotation', element: <MTAdminApprove /> },
         { path: 'movetech/end-quotation', element: <MTAdminEnd /> },

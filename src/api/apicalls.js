@@ -79,3 +79,31 @@ export const getgeoData = async (lat, lon) => {
     return [];
   }
 };
+
+export const loadServerData = async (
+  page,
+  token,
+  state = ['PENDING', 'APPROVED', 'DONE'],
+  sortModel = [{ field: 'updatedAt', sort: 'desc' }]
+) => {
+  try {
+    console.log('in----loadServerData', page, token, state);
+    const response = await axios({
+      method: 'post',
+      url: `${config.API_URL}/api/getallquotations?page=${page}`,
+      data: {
+        state,
+        sortModel: sortModel.length > 0 ? sortModel : [{ field: 'updatedAt', sort: 'desc' }]
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    });
+    console.log(response, '-------response');
+    return response.data;
+  } catch (e) {
+    console.log(e);
+    return 'could not fetch';
+  }
+};

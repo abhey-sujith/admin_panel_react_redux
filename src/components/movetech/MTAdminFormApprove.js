@@ -266,7 +266,7 @@ export default function MTAdminFormApprove({ id = '', amount = 0, daysToComplete
                 inputFormat="dd/MM/yyyy"
                 value={CurrentDatevalue}
                 disabled
-                // onChange={handleDateChange}
+                onChange={() => {}}
                 renderInput={(params) => <TextField {...params} />}
               />
             </Stack>
@@ -282,11 +282,13 @@ export default function MTAdminFormApprove({ id = '', amount = 0, daysToComplete
             Submit
           </LoadingButton>
         </Stack>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-            {error?.errors?.other || error?.errors?.contractpeople}
-          </Alert>
-        </Snackbar>
+        {error && error?.errors && (
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+              {error?.errors?.other || error?.errors?.contractpeople}
+            </Alert>
+          </Snackbar>
+        )}
         <Snackbar open={openSuccess} autoHideDuration={6000} onClose={handleSuccessClose}>
           <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
             Form Submitted

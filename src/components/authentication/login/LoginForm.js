@@ -129,11 +129,13 @@ export default function LoginForm() {
         >
           Login
         </LoadingButton>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-            {error?.errors?.other}
-          </Alert>
-        </Snackbar>
+        {error && error?.errors && (
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+              {error?.errors?.other}
+            </Alert>
+          </Snackbar>
+        )}
       </Form>
     </FormikProvider>
   );

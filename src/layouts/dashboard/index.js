@@ -186,11 +186,13 @@ export default function DashboardLayout() {
               >
                 Submit
               </LoadingButton>
-              <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                  {error?.errors?.other}
-                </Alert>
-              </Snackbar>
+              {error && error?.errors && (
+                <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleClose}>
+                  <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    {error?.errors?.other}
+                  </Alert>
+                </Snackbar>
+              )}
             </Form>
           </FormikProvider>
         </Box>

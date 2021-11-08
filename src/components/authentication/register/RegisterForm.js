@@ -144,11 +144,13 @@ export default function RegisterForm() {
             Register
           </LoadingButton>
         </Stack>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-            {error?.errors?.other}
-          </Alert>
-        </Snackbar>
+        {error && error?.errors && (
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+              {error?.errors?.other}
+            </Alert>
+          </Snackbar>
+        )}
         <Snackbar open={openSuccess} autoHideDuration={6000} onClose={handleSuccessClose}>
           <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
             User Created

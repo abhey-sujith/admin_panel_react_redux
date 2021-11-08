@@ -6,13 +6,13 @@ export const salesInitialState = {
   error: {},
   success: false,
   getattendancestatus: 'idle',
-  getattendanceerror: '',
+  getattendanceerror: {},
   getattendancedata: null,
   getsalesstatus: 'idle',
-  getsaleserror: '',
+  getsaleserror: {},
   getsalesdata: null,
   setaddSalesStatus: 'idle',
-  setaddSalesError: '',
+  setaddSalesError: {},
   setaddSalesisSuccess: false
 };
 
@@ -23,8 +23,9 @@ export const salesSlice = createSlice({
     resetData: (state, action) => {
       console.log(action.payload, '-------------resetData');
       state.error = {};
-      state.getattendanceerror = '';
-      state.getsaleserror = '';
+      state.getattendanceerror = {};
+      state.getsaleserror = {};
+      state.setaddSalesError = {};
       state.success = false;
       state.setaddSalesisSuccess = false;
     }

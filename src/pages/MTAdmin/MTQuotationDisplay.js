@@ -3,7 +3,7 @@ import { filter } from 'lodash';
 import { Icon } from '@iconify/react';
 import { confirmAlert } from 'react-confirm-alert';
 import { sentenceCase } from 'change-case';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo, useRef } from 'react';
 import plusFill from '@iconify/icons-eva/plus-fill';
 import { Link as RouterLink } from 'react-router-dom';
 // material
@@ -20,7 +20,9 @@ import {
   Container,
   Typography,
   TableContainer,
-  TablePagination
+  TablePagination,
+  TextField,
+  Divider
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -30,8 +32,11 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Chip from '@mui/material/Chip';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useFormik } from 'formik';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
+import { createStyles, makeStyles } from '@mui/styles';
 // components
 import Page from '../../components/Page';
 import Label from '../../components/Label';
@@ -135,6 +140,109 @@ function loadServerRows(page, data) {
     }, Math.random() * 500 + 100); // simulate network latency
   });
 }
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      alignItems: 'center',
+      lineHeight: '24px',
+      width: '100%',
+      height: '100%',
+      position: 'relative',
+      display: 'flex',
+      '& .cellValue': {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+      }
+    }
+  })
+);
+
+function isOverflown(element) {
+  return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
+}
+
+const GridCellExpand = memo(function GridCellExpand(props) {
+  const { width, value } = props;
+  const wrapper = useRef(null);
+  const cellDiv = useRef(null);
+  const cellValue = useRef(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const classes = useStyles();
+  const [showFullCell, setShowFullCell] = useState(false);
+  const [showPopper, setShowPopper] = useState(false);
+
+  const handleMouseEnter = () => {
+    const isCurrentlyOverflown = isOverflown(cellValue.current);
+    setShowPopper(isCurrentlyOverflown);
+    setAnchorEl(cellDiv.current);
+    setShowFullCell(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowFullCell(false);
+  };
+
+  useEffect(() => {
+    if (!showFullCell) {
+      return undefined;
+    }
+
+    function handleKeyDown(nativeEvent) {
+      // IE11, Edge (prior to using Bink?) use 'Esc'
+      if (nativeEvent.key === 'Escape' || nativeEvent.key === 'Esc') {
+        setShowFullCell(false);
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [setShowFullCell, showFullCell]);
+
+  return (
+    <div
+      ref={wrapper}
+      className={classes.root}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div
+        ref={cellDiv}
+        style={{
+          height: 1,
+          width,
+          display: 'block',
+          position: 'absolute',
+          top: 0
+        }}
+      />
+      <div ref={cellValue} className="cellValue">
+        {value}
+      </div>
+      {showPopper && (
+        <Popper
+          open={showFullCell && anchorEl !== null}
+          anchorEl={anchorEl}
+          style={{ width, marginLeft: -17 }}
+        >
+          <Paper elevation={1} style={{ minHeight: wrapper.current.offsetHeight - 3 }}>
+            <Typography variant="body2" style={{ padding: 8 }}>
+              {value}
+            </Typography>
+          </Paper>
+        </Popper>
+      )}
+    </div>
+  );
+});
+
+function renderCellExpand(params) {
+  return <GridCellExpand value={params.value || ''} width={params.colDef.computedWidth} />;
+}
+
 export default function MTQuotationDisplay() {
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -328,7 +436,7 @@ export default function MTQuotationDisplay() {
   };
 
   return (
-    <Page title="User | Minimal-UI">
+    <Page title="User ">
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
@@ -351,27 +459,58 @@ export default function MTQuotationDisplay() {
             />
             {selectedRow ? (
               <>
-                <Button
-                  variant="contained"
-                  sx={{ pl: 2, pr: 2, ml: 1, mr: 1 }}
-                  startIcon={<Icon icon={plusFill} />}
-                  component={RouterLink}
-                  to="/dashboard/movetech/edit-quotation"
-                  state={{
-                    id: selectedRowData.id,
-                    customerName: selectedRowData.customerName,
-                    quotationDetails: selectedRowData.quotationDetails,
-                    state: selectedRowData.state,
-                    requirements: selectedRowData.requirements,
-                    amount: selectedRowData.amount,
-                    daysToComplete: selectedRowData.daysToComplete,
-                    advanceAmount: selectedRowData.advanceAmount,
-                    deliveryDate: selectedRowData.deliveryDate,
-                    settledAmount: selectedRowData.settledAmount
-                  }}
-                >
-                  Edit
-                </Button>
+                {selectedRowData.state === 'APPROVED' || selectedRowData.state === 'DONE' ? (
+                  <Button
+                    variant="contained"
+                    sx={{ pl: 2, pr: 2, ml: 1, mr: 1 }}
+                    startIcon={<Icon icon={plusFill} />}
+                    component={RouterLink}
+                    to="/dashboard/movetech/edit-quotation"
+                    state={{
+                      id: selectedRowData.id,
+                      customerName: selectedRowData.customerName,
+                      quotationDetails: selectedRowData.quotationDetails,
+                      state: selectedRowData.state,
+                      requirements: selectedRowData.requirements,
+                      amount: selectedRowData.amount,
+                      daysToComplete: selectedRowData.daysToComplete,
+                      advanceAmount: selectedRowData.advanceAmount,
+                      deliveryDate: selectedRowData.deliveryDate,
+                      settledAmount: selectedRowData.settledAmount
+                    }}
+                  >
+                    Edit
+                  </Button>
+                ) : null}
+                {selectedRowData.state === 'PENDING' ? (
+                  <Button
+                    variant="contained"
+                    sx={{ pl: 2, pr: 2, ml: 1, mr: 1 }}
+                    startIcon={<Icon icon={plusFill} />}
+                    component={RouterLink}
+                    to="/dashboard/movetech/approve-quotation"
+                    state={{
+                      id: selectedRowData.id,
+                      amount: selectedRowData.amount,
+                      daysToComplete: selectedRowData.daysToComplete
+                    }}
+                  >
+                    Approve
+                  </Button>
+                ) : selectedRowData.state === 'APPROVED' ? (
+                  <Button
+                    variant="contained"
+                    sx={{ pl: 2, pr: 2, ml: 1, mr: 1 }}
+                    startIcon={<Icon icon={plusFill} />}
+                    component={RouterLink}
+                    to="/dashboard/movetech/end-quotation"
+                    state={{
+                      id: selectedRowData.id
+                    }}
+                  >
+                    End
+                  </Button>
+                ) : null}
                 <Button
                   variant="contained"
                   sx={{ pl: 2, pr: 2, ml: 1, mr: 1 }}
@@ -385,39 +524,168 @@ export default function MTQuotationDisplay() {
           </Stack>
         </Stack>
 
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ height: 700, width: '100%' }}>
           <DataGrid
             rows={rows}
             columns={[
-              { field: 'customerName' },
-              { field: 'quotationDetails' },
-              { field: 'requirements' },
-              { field: 'amount' },
-              { field: 'daysToComplete' },
-              { field: 'advanceAmount' },
-              { field: 'settledAmount' },
-              { field: 'state' },
-              { field: 'createdBy' },
-              { field: 'updatedBy' },
-              { field: 'createdAt' },
-              { field: 'updatedAt' }
+              {
+                field: 'customerName',
+                renderHeader: (params) => (
+                  <strong>
+                    {'Customer Name'}
+                    {/* <span role="img" aria-label="enjoy">
+                      🎂
+                    </span> */}
+                  </strong>
+                ),
+                minWidth: 150
+              },
+              {
+                field: 'quotationDetails',
+                renderHeader: (params) => <strong>{'Quotation Details'}</strong>,
+                renderCell: renderCellExpand,
+                minWidth: 200
+              },
+              {
+                field: 'requirements',
+                renderHeader: (params) => <strong>{'Requirements'}</strong>,
+                renderCell: renderCellExpand,
+                minWidth: 200
+              },
+
+              {
+                field: 'amount',
+                renderHeader: (params) => <strong>{'Amount'}</strong>,
+                minWidth: 150
+              },
+              {
+                field: 'state',
+                renderHeader: (params) => <strong>{'State '}</strong>,
+                renderCell: (params) => (
+                  <strong>
+                    <Label
+                      variant="ghost"
+                      color={
+                        (params.value === 'PENDING' && 'info') ||
+                        (params.value === 'APPROVED' && 'success') ||
+                        (params.value === 'DONE' && 'warning') ||
+                        'error'
+                      }
+                    >
+                      {params.value}
+                    </Label>
+                  </strong>
+                ),
+                minWidth: 150
+              },
+              {
+                field: 'daysToComplete',
+                renderHeader: (params) => <strong>{'Days to Complete'}</strong>,
+                minWidth: 150
+              },
+              {
+                field: 'advanceAmount',
+                renderHeader: (params) => <strong>{'Advance Amount '}</strong>,
+                minWidth: 150
+              },
+              {
+                field: 'people',
+                renderHeader: (params) => <strong>{'People Assigned '}</strong>,
+                renderCell: (params) => (
+                  <>
+                    {params.value && params.value.length > 0 ? (
+                      <Select
+                        labelId="demo-multiple-chip-label"
+                        id="demo-multiple-chip"
+                        multiple
+                        value={params.value}
+                        sx={{ width: '100%' }}
+                        // onChange={handleChange}
+                        // input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                        renderValue={() => <div>{params.value.length}</div>}
+                      >
+                        {params.value.map(({ username, email }) => (
+                          <MenuItem key={email} value={username}>
+                            <Box sx={{ width: '100%' }}>
+                              <Typography variant="h6">{username}</Typography>
+                              <Typography variant="h7" sx={{ color: 'text.secondary' }}>
+                                {email}
+                              </Typography>
+                              <Divider />
+                            </Box>
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    ) : null}
+                  </>
+                ),
+                minWidth: 150
+              },
+              {
+                field: 'settledAmount',
+                renderHeader: (params) => <strong>{'Settled Amount '}</strong>,
+                minWidth: 150
+              },
+
+              {
+                field: 'updatedBy',
+                renderHeader: (params) => <strong>{'Updated By '}</strong>,
+                minWidth: 150
+              },
+              {
+                field: 'createdBy',
+                renderHeader: (params) => <strong>{'Created By '}</strong>,
+                minWidth: 150
+              },
+              {
+                field: 'createdAt',
+                renderHeader: (params) => <strong>{'Created At '}</strong>,
+                valueFormatter: (params) => {
+                  return fDate(params.value);
+                },
+                minWidth: 150
+              },
+              {
+                field: 'updatedAt',
+                renderHeader: (params) => <strong>{'Updated At '}</strong>,
+                valueFormatter: (params) => {
+                  return fDate(params.value);
+                },
+                minWidth: 150
+              }
             ]}
             pagination
-            pageSize={5}
-            rowsPerPageOptions={[5]}
+            pageSize={10}
+            rowsPerPageOptions={[10]}
             rowCount={total}
             paginationMode="server"
             onPageChange={(newPage) => setPage(newPage)}
             loading={loading}
-            onRowClick={(e) => {
+            onRowClick={(params, e) => {
+              console.log(e.metaKey, params.id);
+              if (e.metaKey || e.ctrlKey) {
+                if (params.id === selectedRow) {
+                  setselectedRow('');
+                  setselectedRowData('');
+                } else {
+                  setselectedRow(params.id);
+                  setselectedRowData(params.row);
+                }
+              } else {
+                setselectedRow(params.id);
+                setselectedRowData(params.row);
+              }
+            }}
+            selectionChange={(e) => {
               console.log(e);
-              setselectedRow(e.id);
-              setselectedRowData(e.row);
             }}
             disableColumnFilter
             sortingMode="server"
             sortModel={sortModel}
             onSortModelChange={handleSortModelChange}
+            components={{
+              Toolbar: GridToolbar
+            }}
           />
         </div>
       </Container>

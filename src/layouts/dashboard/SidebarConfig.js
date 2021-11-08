@@ -37,14 +37,14 @@ const sidebarConfig = [
     icon: getIcon(peopleFill),
     permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
   },
+  // {
+  //   title: 'Show Quotation',
+  //   path: '/dashboard/movetech/display-contracts',
+  //   icon: getIcon(peopleFill),
+  //   permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
+  // },
   {
     title: 'Show Quotation',
-    path: '/dashboard/movetech/display-contracts',
-    icon: getIcon(peopleFill),
-    permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
-  },
-  {
-    title: 'Show Contracts',
     path: '/dashboard/movetech/display-quotations',
     icon: getIcon(peopleFill),
     permission: [Roles.SUPER_ADMIN, Roles.MT_ADMIN]
